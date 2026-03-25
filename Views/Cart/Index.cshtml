@@ -1,0 +1,101 @@
+﻿@model PSite3.Models.ViewModels.CartViewModel
+@{
+    ViewData["Title"] = "Корзина";
+}
+
+<div class="cart-container">
+    @if (Model != null && Model.Items.Any())
+    {
+        <h1 class="cart-page-title">
+            <span class="material-icons-round">shopping_cart</span>
+            <span>Корзина</span>
+        </h1>
+
+        <a asp-controller="Home" asp-action="Index" class="btn-continue">
+            <span class="material-icons-round">arrow_back</span>
+            <span>Продолжить покупки</span>
+        </a>
+
+        <div class="cart-grid">
+            <div class="cart-items">
+                @foreach (var item in Model.Items)
+                {
+                    <div class="cart-item" data-product-id="@item.ProductId">
+                        <form asp-action="Update" method="post" class="d-inline">
+                            <input type="hidden" name="productId" value="@item.ProductId" />
+                            <input type="hidden" name="quantity" value="0" />
+                            <button type="submit" class="item-image" title="Наведите и кликните для удаления">
+                                <span class="material-icons-round">inventory_2</span>
+                            </button>
+                        </form>
+
+                        <div class="item-details">
+                            <h3>@item.ProductName</h3>
+                            <div class="item-price">@item.Price.ToString("0.00") ₽</div>
+                        </div>
+
+                        <form asp-action="Update" method="post" class="quantity-control">
+                            <input type="hidden" name="productId" value="@item.ProductId" />
+
+                            <button type="submit" name="quantity" value="@(item.Quantity - 1)"
+                                    class="qty-btn"
+                                    title="Уменьшить">
+                                <span class="material-icons-round">remove</span>
+                            </button>
+
+                            <span class="qty-value">@item.Quantity</span>
+
+                            <button type="submit" name="quantity" value="@(item.Quantity + 1)"
+                                    class="qty-btn" title="Увеличить">
+                                <span class="material-icons-round">add</span>
+                            </button>
+                        </form>
+
+                        <div class="item-subtotal">
+                            @((item.Price * item.Quantity).ToString("0.00")) ₽
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="cart-summary">
+                <h2 class="summary-title">Итого</h2>
+
+                <div class="summary-row">
+                    <span>Товаров</span>
+                    <span>@Model.Items.Sum(i => i.Quantity) шт.</span>
+                </div>
+
+                <div class="summary-row">
+                    <span>Получение</span>
+                    <span style="color: var(--green);">Самовывоз</span>
+                </div>
+
+                <div class="summary-row total">
+                    <span>К оплате</span>
+                    <span id="cart-total">@Model.Total.ToString("0.00") ₽</span>
+                </div>
+
+                <button class="btn-checkout">
+                    <span class="material-icons-round">check_circle</span>
+                    <span>Оформить заказ</span>
+                </button>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="empty-cart">
+            <div class="empty-cart-icon">
+                <span class="material-icons-round">shopping_cart</span>
+            </div>
+
+            <h2>Ваша корзина пуста</h2>
+            <p>Похоже, вы ещё не добавили ни одного товара.<br>Исправим это прямо сейчас!</p>
+
+            <a asp-controller="Home" asp-action="Index" class="btn-catalog">
+                <span>Перейти в каталог</span>
+            </a>
+        </div>
+    }
+</div>
