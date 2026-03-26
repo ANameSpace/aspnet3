@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PSite3.Models;
-using PSite3.Models.ViewModels;
 
 namespace PSite3.Controllers
 {
@@ -20,74 +19,46 @@ namespace PSite3.Controllers
                 .Include(ci => ci.Product)
                 .ThenInclude(p => p.Category)
                 .ToListAsync();
-
-            var viewModel = new CartViewModel
-            {
-                CartId = cart.IdCart,
-                Items = [.. cartItems.Select(ci => new CartItemViewModel
-                {
-                    CartItemId = ci.IdCartItem,
-                    ProductId = ci.ProductId,
-                    ProductName = ci.Product.Name,
-                    Price = ci.Product.Price,
-                    Quantity = ci.Quantity,
-                    CategoryName = ci.Product.Category?.Name ?? "Без категории"
-                })],
-                Total = cartItems.Sum(ci => ci.Product.Price * ci.Quantity)
-            };
-
-            return View(viewModel);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Add(int productId)
-        {
-            var userId = USER_ID;
-            var cart = await GetOrCreateCartAsync(userId);
-
-            var item = cart.CartItems.FirstOrDefault(ci => ci.ProductId == productId);
-
-            if (item == null)
-            {
-                _context.CartItems.Add(new CartItem { ProductId = productId, CartId = cart.IdCart, Quantity = 1 });
-                await _context.SaveChangesAsync();
-            }
-            return RedirectToAction("Index", "Home");
+            return View(cartItems);
         }
 
         [HttpPost]
         public async Task<IActionResult> Update(int productId, int quantity)
         {
-            var userId = USER_ID;
-            var cart = await GetOrCreateCartAsync(userId);
-
+            var cart = await GetOrCreateCartAsync(USER_ID);
             var item = cart.CartItems.FirstOrDefault(ci => ci.ProductId == productId);
 
             if (item == null)
             {
-                _context.CartItems.Add(new CartItem { ProductId = productId, CartId = cart.IdCart, Quantity = quantity });
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Index", "Cart");
+                if (quantity > 0)
+                {
+                    _context.CartItems.Add(new CartItem { ProductId = productId, CartId = cart.IdCart, Quantity = quantity });
+                }
+                else
+                {
+                    return BadRequest();
+                }
             }
-            
-
-            if (quantity <= 0)
+            else if (quantity <= 0)
             {
                 _context.CartItems.Remove(item);
-            }
+            }  
             else
             {
                 item.Quantity = quantity;
             }
+                
+
             await _context.SaveChangesAsync();
-            return RedirectToAction("Index", "Cart");
+
+            var referer = Request.Headers.Referer.ToString();
+            return !string.IsNullOrEmpty(referer) ? Redirect(referer) : RedirectToAction("Index", "Cart");
         }
 
         private async Task<Cart> GetOrCreateCartAsync(int userId)
         {
             var cart = await _context.Carts
-                .Include(c => c.CartItems)
-                    .ThenInclude(ci => ci.Product)
+                .Include(c => c.CartItems).ThenInclude(ci => ci.Product)
                 .FirstOrDefaultAsync(c => c.UserId == userId);
 
             if (cart == null)

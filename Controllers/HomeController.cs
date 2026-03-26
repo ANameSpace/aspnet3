@@ -5,31 +5,29 @@ using System.Diagnostics;
 
 namespace PSite3.Controllers
 {
-    public class HomeController(ShopContext context) : Controller
+    public class HomeController(ShopContext _context) : Controller
     {
         private readonly int USER_ID = 1;
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var products = await context.Products
+            var userId = USER_ID;
+
+            var products = await _context.Products
                 .Include(p => p.Category)
                 .ToListAsync();
 
-            var cart = await context.Carts
+            if (userId != 0) 
+            {
+                var cart = await _context.Carts
                 .Include(c => c.CartItems)
                 .FirstOrDefaultAsync(c => c.UserId == USER_ID);
 
-            var cartItems = new Dictionary<int, int>();
-            if (cart?.CartItems != null)
-            {
-                foreach (var item in cart.CartItems)
-                {
-                    cartItems[item.ProductId] = item.Quantity;
-                }
+                ViewBag.CartItems = cart?.CartItems?
+                    .ToDictionary(i => i.ProductId, i => i.Quantity) ?? [];
             }
-
-            ViewBag.CartItems = cartItems;
-
+            
             return View(products);
         }
 

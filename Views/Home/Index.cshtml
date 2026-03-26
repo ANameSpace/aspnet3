@@ -44,8 +44,9 @@
                 }
                 else
                 {
-                    <form asp-controller="Cart" asp-action="Add" method="post">
+                    <form asp-controller="Cart" asp-action="Update" method="post">
                         <input type="hidden" name="productId" value="@product.IdProduct" />
+                        <input type="hidden" name="quantity" value="1" />
                         <button type="submit" class="btn btn-primary" style="width: 100%;">
                             <span class="material-icons-round">add_shopping_cart</span>
                             <span>В корзину</span>

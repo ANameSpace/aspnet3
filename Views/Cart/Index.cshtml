@@ -1,10 +1,10 @@
-﻿@model PSite3.Models.ViewModels.CartViewModel
+﻿@model IEnumerable<PSite3.Models.CartItem>
 @{
     ViewData["Title"] = "Корзина";
 }
 
 <div class="cart-container">
-    @if (Model != null && Model.Items.Any())
+    @if (Model != null && Model.Any())
     {
         <h1 class="cart-page-title">
             <span class="material-icons-round">shopping_cart</span>
@@ -18,7 +18,7 @@
 
         <div class="cart-grid">
             <div class="cart-items">
-                @foreach (var item in Model.Items)
+                @foreach (var item in Model)
                 {
                     <div class="cart-item" data-product-id="@item.ProductId">
                         <form asp-action="Update" method="post" class="d-inline">
@@ -30,8 +30,8 @@
                         </form>
 
                         <div class="item-details">
-                            <h3>@item.ProductName</h3>
-                            <div class="item-price">@item.Price.ToString("0.00") ₽</div>
+                            <h3>@item.Product.Name</h3>
+                            <div class="item-price">@item.Product.Price.ToString("0.00") ₽</div>
                         </div>
 
                         <form asp-action="Update" method="post" class="quantity-control">
@@ -52,7 +52,7 @@
                         </form>
 
                         <div class="item-subtotal">
-                            @((item.Price * item.Quantity).ToString("0.00")) ₽
+                            @((item.Product.Price * item.Quantity).ToString("0.00")) ₽
                         </div>
                     </div>
                 }
@@ -63,7 +63,7 @@
 
                 <div class="summary-row">
                     <span>Товаров</span>
-                    <span>@Model.Items.Sum(i => i.Quantity) шт.</span>
+                    <span>@Model.Sum(i => i.Quantity) шт.</span>
                 </div>
 
                 <div class="summary-row">
@@ -73,7 +73,7 @@
 
                 <div class="summary-row total">
                     <span>К оплате</span>
-                    <span id="cart-total">@Model.Total.ToString("0.00") ₽</span>
+                    <span id="cart-total">@Model.Sum(i => i.Product.Price * i.Quantity).ToString("0.00") ₽</span>
                 </div>
 
                 <button class="btn-checkout">
