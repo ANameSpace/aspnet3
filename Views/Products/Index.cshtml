@@ -1,0 +1,37 @@
+﻿@model IEnumerable<PSite3.Models.Product>
+@{
+    ViewData["Title"] = "Products";
+}
+
+<h1>Данные таблицы Product</h1>
+
+<a class="btn btn-primary" asp-action="Create">Добавить продукт</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Код</th>
+            <th>Название</th>
+            <th>Описание</th>
+            <th>Цена</th>
+            <th>Код категории</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var m in Model)
+        {
+            <tr>
+                <td>@m.IdProduct</td>
+                <td>@m.Name</td>
+                <td>@m.Description</td>
+                <td>@m.Price</td>
+                <td>@m.CategoryId</td>
+                <td>
+                    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@m.IdProduct">Изменить</a>
+                    <a class="btn btn-danger" asp-action="Delete" asp-route-id="@m.IdProduct">Удалить</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

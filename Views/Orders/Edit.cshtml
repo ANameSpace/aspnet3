@@ -1,0 +1,30 @@
+﻿@model PSite3.Models.Order
+@{
+    ViewData["Title"] = "Orders";
+    var users = ViewBag.Users as IEnumerable<PSite3.Models.User>;
+}
+<h1>Edit order</h1>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="IdOrder" />
+    <div>
+        <label>User</label>
+        <select asp-for="UserId">
+            @foreach (var u in (users ?? Enumerable.Empty<PSite3.Models.User>()))
+            {
+                <option value="@u.IdUser">@u.Login</option>
+            }
+        </select>
+        <span asp-validation-for="UserId"></span>
+    </div>
+
+    <div>
+        <label>Order Date</label>
+        <input asp-for="OrderDate" />
+        <span asp-validation-for="OrderDate"></span>
+    </div>
+
+    <br />
+    <button class="btn btn-primary" type="submit">Save</button>
+    <a class="btn btn-secondary" asp-action="Index">Cancel</a>
+</form>

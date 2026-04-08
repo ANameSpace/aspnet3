@@ -1,0 +1,15 @@
+﻿@model PSite3.Models.Cart
+@{
+    ViewData["Title"] = "Carts";
+}
+
+<h1>Уверены?</h1>
+
+<p>Вы удалите корзину с ID <b>@Model.IdCart</b> (пользователь @Model.UserId).</p>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="IdCart" />
+    <br />
+    <button class="btn btn-danger" type="submit">Удалить</button>
+    <a class="btn btn-secondary" asp-action="Index">Отменить</a>
+</form>

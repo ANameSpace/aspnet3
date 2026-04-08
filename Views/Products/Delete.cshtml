@@ -1,0 +1,15 @@
+﻿@model PSite3.Models.Product
+@{
+    ViewData["Title"] = "Products";
+}
+
+<h1>Уверены?</h1>
+
+<p>Вы удалите продукт <b>@Model.Name</b> (ID @Model.IdProduct).</p>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="IdProduct" />
+    <br />
+    <button class="btn btn-danger" type="submit">Удалить</button>
+    <a class="btn btn-secondary" asp-action="Index">Отменить</a>
+</form>

@@ -1,0 +1,15 @@
+﻿@model PSite3.Models.User
+@{
+    ViewData["Title"] = "Users";
+}
+
+<h1>Уверены?</h1>
+
+<p>Вы удалите пользователя с логином <b>@Model.Login</b> (ID @Model.IdUser).</p>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="IdUser" />
+    <br />
+    <button class="btn btn-danger" type="submit">Удалить</button>
+    <a class="btn btn-secondary" asp-action="Index">Отменить</a>
+</form>

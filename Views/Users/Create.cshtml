@@ -1,0 +1,35 @@
+﻿@model PSite3.Models.User
+@{
+    ViewData["Title"] = "Users";
+    var roles = ViewBag.Roles as IEnumerable<PSite3.Models.Role>;
+}
+<h1>Create user</h1>
+
+<form asp-action="Create" method="post">
+    <div>
+        <label>Login</label>
+        <input asp-for="Login" />
+        <span asp-validation-for="Login"></span>
+    </div>
+
+    <div>
+        <label>Hash</label>
+        <input asp-for="Hash" />
+        <span asp-validation-for="Hash"></span>
+    </div>
+
+    <div>
+        <label>Role</label>
+        <select asp-for="RoleId">
+            @foreach (var r in (roles ?? Enumerable.Empty<PSite3.Models.Role>()))
+            {
+                <option value="@r.IdRole">@r.Name</option>
+            }
+        </select>
+        <span asp-validation-for="RoleId"></span>
+    </div>
+
+    <br />
+    <button class="btn btn-primary" type="submit">Save</button>
+    <a class="btn btn-danger" asp-action="Index">Cancel</a>
+</form>

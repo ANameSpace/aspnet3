@@ -1,0 +1,15 @@
+﻿@model PSite3.Models.Role
+@{
+    ViewData["Title"] = "Roles";
+}
+
+<h1>Уверены?</h1>
+
+<p>Вы удалите роль <b>@Model.Name</b> (ID @Model.IdRole).</p>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="IdRole" />
+    <br />
+    <button class="btn btn-danger" type="submit">Удалить</button>
+    <a class="btn btn-secondary" asp-action="Index">Отменить</a>
+</form>

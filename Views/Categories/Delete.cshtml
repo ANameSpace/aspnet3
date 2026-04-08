@@ -1,0 +1,15 @@
+﻿@model PSite3.Models.Category
+@{
+    ViewData["Title"] = "Categories";
+}
+
+<h1>Уверены?</h1>
+
+<p>Вы удалите категорию <b>@Model.Name</b> (ID @Model.IdCategory).</p>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="IdCategory" />
+    <br />
+    <button class="btn btn-danger" type="submit">Удалить</button>
+    <a class="btn btn-secondary" asp-action="Index">Отменить</a>
+</form>

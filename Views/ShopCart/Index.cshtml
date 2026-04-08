@@ -7,12 +7,11 @@
     @if (Model != null && Model.Any())
     {
         <h1 class="cart-page-title">
-            <span class="material-icons-round">shopping_cart</span>
             <span>Корзина</span>
         </h1>
 
         <a asp-controller="Home" asp-action="Index" class="btn-continue">
-            <span class="material-icons-round">arrow_back</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><title>Arrow-back-outline SVG Icon</title><path fill="currentColor" d="M19 11H7.14l3.63-4.36a1 1 0 1 0-1.54-1.28l-5 6a1 1 0 0 0-.09.15c0 .05 0 .08-.07.13A1 1 0 0 0 4 12a1 1 0 0 0 .07.36c0 .05 0 .08.07.13a1 1 0 0 0 .09.15l5 6A1 1 0 0 0 10 19a1 1 0 0 0 .64-.23a1 1 0 0 0 .13-1.41L7.14 13H19a1 1 0 0 0 0-2" /></svg>
             <span>Продолжить покупки</span>
         </a>
 
@@ -25,7 +24,7 @@
                             <input type="hidden" name="productId" value="@item.ProductId" />
                             <input type="hidden" name="quantity" value="0" />
                             <button type="submit" class="item-image" title="Наведите и кликните для удаления">
-                                <span class="material-icons-round">inventory_2</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24"><title>Baseline-hide-image SVG Icon</title><path fill="currentColor" d="M21 5c0-1.1-.9-2-2-2H5.83L21 18.17zM2.81 2.81L1.39 4.22L3 5.83V19c0 1.1.9 2 2 2h13.17l1.61 1.61l1.41-1.41zM6 17l3-4l2.25 3l.82-1.1l2.1 2.1z" /></svg>
                             </button>
                         </form>
 
@@ -40,14 +39,14 @@
                             <button type="submit" name="quantity" value="@(item.Quantity - 1)"
                                     class="qty-btn"
                                     title="Уменьшить">
-                                <span class="material-icons-round">remove</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><title>Baseline-minus SVG Icon</title><path fill="currentColor" d="M19 12.998H5v-2h14z" /></svg>
                             </button>
 
                             <span class="qty-value">@item.Quantity</span>
 
                             <button type="submit" name="quantity" value="@(item.Quantity + 1)"
                                     class="qty-btn" title="Увеличить">
-                                <span class="material-icons-round">add</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><title>Add SVG Icon</title><path fill="currentColor" d="M17 15V8h-2v7H8v2h7v7h2v-7h7v-2z" /></svg>
                             </button>
                         </form>
 
@@ -77,7 +76,7 @@
                 </div>
 
                 <button class="btn-checkout">
-                    <span class="material-icons-round">check_circle</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 512 512"><title>Check-circle SVG Icon</title><path fill="currentColor" d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256S119.033 8 256 8s248 111.033 248 248M227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001" /></svg>
                     <span>Оформить заказ</span>
                 </button>
             </div>
@@ -87,7 +86,7 @@
     {
         <div class="empty-cart">
             <div class="empty-cart-icon">
-                <span class="material-icons-round">shopping_cart</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><title>Error-404 SVG Icon</title><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8v3a1 1 0 0 0 1 1h3m0-4v8m10-8v3a1 1 0 0 0 1 1h3m0-4v8m-11-6v4a2 2 0 1 0 4 0v-4a2 2 0 1 0-4 0" /></svg>
             </div>
 
             <h2>Ваша корзина пуста</h2>

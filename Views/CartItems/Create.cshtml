@@ -1,0 +1,42 @@
+﻿@model PSite3.Models.CartItem;
+@{
+    ViewData["Title"] = "CartItems";
+    var carts = ViewBag.Carts as IEnumerable<PSite3.Models.Cart>;
+    var products = ViewBag.Products as IEnumerable<PSite3.Models.Product>;
+}
+<h1>Create cart item</h1>
+
+<form asp-action="Create" method="post">
+   
+    <div>
+        <label>Cart</label>
+        <select asp-for="CartId">
+            @foreach (var c in (carts ?? Enumerable.Empty<PSite3.Models.Cart>()))
+            {
+                <option value="@c.IdCart">@c.IdCart</option>
+            }
+        </select>
+        <span asp-validation-for="CartId"></span>
+    </div>
+
+    <div>
+        <label>Product</label>
+        <select asp-for="ProductId">
+            @foreach (var c in (products ?? Enumerable.Empty<PSite3.Models.Product>()))
+            {
+                <option value="@c.IdProduct">@c.Name</option>
+            }
+        </select>
+        <span asp-validation-for="ProductId"></span>
+    </div>
+
+    <div>
+        <label>Quantity</label>
+        <input asp-for="Quantity" />
+        <span asp-validation-for="Quantity"></span>
+    </div>
+
+    <br/>
+    <button class="btn btn-primary" type="submit">Save</button>
+    <a class="btn btn-danger" asp-action="Index">Cancel</a>
+</form>

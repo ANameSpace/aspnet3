@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace PSite3.Models;
 
@@ -11,9 +12,12 @@ public partial class Product
 
     public string? Description { get; set; }
 
+    [Range(0.1, double.MaxValue)]
     public decimal Price { get; set; }
 
     public int CategoryId { get; set; }
+
+    public string? Image { get; set; }
 
     public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
 

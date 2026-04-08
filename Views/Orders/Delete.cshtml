@@ -1,0 +1,15 @@
+﻿@model PSite3.Models.Order
+@{
+    ViewData["Title"] = "Orders";
+}
+
+<h1>Уверены?</h1>
+
+<p>Вы удалите заказ с ID <b>@Model.IdOrder</b> (пользователь @Model.UserId, дата @Model.OrderDate).</p>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="IdOrder" />
+    <br />
+    <button class="btn btn-danger" type="submit">Удалить</button>
+    <a class="btn btn-secondary" asp-action="Index">Отменить</a>
+</form>

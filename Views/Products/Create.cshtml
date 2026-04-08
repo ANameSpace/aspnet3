@@ -1,0 +1,41 @@
+﻿@model PSite3.Models.Product
+@{
+    ViewData["Title"] = "Products";
+    var categories = ViewBag.Categories as IEnumerable<PSite3.Models.Category>;
+}
+<h1>Create product</h1>
+
+<form asp-action="Create" method="post">
+    <div>
+        <label>Name</label>
+        <input asp-for="Name" />
+        <span asp-validation-for="Name"></span>
+    </div>
+
+    <div>
+        <label>Description</label>
+        <input asp-for="Description" />
+        <span asp-validation-for="Description"></span>
+    </div>
+
+    <div>
+        <label>Price</label>
+        <input asp-for="Price" />
+        <span asp-validation-for="Price"></span>
+    </div>
+
+    <div>
+        <label>Category</label>
+        <select asp-for="CategoryId">
+            @foreach (var c in (categories ?? Enumerable.Empty<PSite3.Models.Category>()))
+            {
+                <option value="@c.IdCategory">@c.Name</option>
+            }
+        </select>
+        <span asp-validation-for="CategoryId"></span>
+    </div>
+
+    <br />
+    <button class="btn btn-primary" type="submit">Save</button>
+    <a class="btn btn-danger" asp-action="Index">Cancel</a>
+</form>

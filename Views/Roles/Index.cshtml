@@ -1,0 +1,31 @@
+﻿@model IEnumerable<PSite3.Models.Role>
+@{
+    ViewData["Title"] = "Roles";
+}
+
+<h1>Данные таблицы Role</h1>
+
+<a class="btn btn-primary" asp-action="Create">Добавить роль</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Код</th>
+            <th>Название</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var m in Model)
+        {
+            <tr>
+                <td>@m.IdRole</td>
+                <td>@m.Name</td>
+                <td>
+                    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@m.IdRole">Изменить</a>
+                    <a class="btn btn-danger" asp-action="Delete" asp-route-id="@m.IdRole">Удалить</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

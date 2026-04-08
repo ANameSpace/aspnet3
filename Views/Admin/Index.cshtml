@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "Admin Panel";
+}
+
+<h1>Admin Panel</h1>
+
+<div style="display: flex; flex-wrap: wrap; gap: 15px; margin-top: 30px;">
+    <a class="btn btn-primary" asp-controller="Users" asp-action="Index" style="min-width: 150px;">Пользователи</a>
+    <a class="btn btn-primary" asp-controller="Roles" asp-action="Index" style="min-width: 150px;">Роли</a>
+    <a class="btn btn-primary" asp-controller="Categories" asp-action="Index" style="min-width: 150px;">Категории</a>
+    <a class="btn btn-primary" asp-controller="Products" asp-action="Index" style="min-width: 150px;">Товары</a>
+    <a class="btn btn-primary" asp-controller="Carts" asp-action="Index" style="min-width: 150px;">Корзины</a>
+    <a class="btn btn-primary" asp-controller="CartItems" asp-action="Index" style="min-width: 150px;">Позиции корзины</a>
+    <a class="btn btn-primary" asp-controller="Orders" asp-action="Index" style="min-width: 150px;">Заказы</a>
+    <a class="btn btn-primary" asp-controller="OrderItems" asp-action="Index" style="min-width: 150px;">Позиции заказов</a>
+</div>

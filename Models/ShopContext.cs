@@ -127,6 +127,10 @@ public partial class ShopContext : DbContext
                 .HasMaxLength(512)
                 .IsUnicode(false)
                 .HasColumnName("description");
+            entity.Property(e => e.Image)
+                .HasMaxLength(256)
+                .IsUnicode(false)
+                .HasColumnName("image");
             entity.Property(e => e.Name)
                 .HasMaxLength(32)
                 .IsUnicode(false)

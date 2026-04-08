@@ -33,22 +33,22 @@
 
                 @if (cartQuantity > 0)
                 {
-                    <form asp-controller="Cart" asp-action="Update" method="post" style="display: block; margin-top: 0.75rem;">
+                    <form asp-controller="ShopCart" asp-action="Update" method="post" style="display: block; margin-top: 0.75rem;">
                         <input type="hidden" name="productId" value="@product.IdProduct" />
                         <input type="hidden" name="quantity" value="0" />
                         <button type="submit" class="btn btn-danger" style="width: 100%;">
-                            <span class="material-icons-round" style="font-size: 1rem;">delete</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><title>Baseline-delete SVG Icon</title><path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6zM19 4h-3.5l-1-1h-5l-1 1H5v2h14z" /></svg>
                             <span>Удалить из корзины</span>
                         </button>
                     </form>
                 }
                 else
                 {
-                    <form asp-controller="Cart" asp-action="Update" method="post">
+                    <form asp-controller="ShopCart" asp-action="Update" method="post">
                         <input type="hidden" name="productId" value="@product.IdProduct" />
                         <input type="hidden" name="quantity" value="1" />
                         <button type="submit" class="btn btn-primary" style="width: 100%;">
-                            <span class="material-icons-round">add_shopping_cart</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><title>Baseline-shopping-cart SVG Icon</title><path fill="currentColor" d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2s-.9-2-2-2M1 2v2h2l3.6 7.59l-1.35 2.45c-.16.28-.25.61-.25.96c0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12l.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0 0 20 4H5.21l-.94-2zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2s2-.9 2-2s-.9-2-2-2" /></svg>
                             <span>В корзину</span>
                         </button>
                     </form>
@@ -61,7 +61,7 @@
     {
         <div class="empty-state">
             <div class="empty-cart-icon">
-                <span class="material-icons-round">inventory_2</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><title>Error-404 SVG Icon</title><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8v3a1 1 0 0 0 1 1h3m0-4v8m10-8v3a1 1 0 0 0 1 1h3m0-4v8m-11-6v4a2 2 0 1 0 4 0v-4a2 2 0 1 0-4 0" /></svg>
             </div>
             <h2>Товары не найдены</h2>
             <p>Каталог пока пуст или по вашему запросу ничего не найдено</p>

@@ -1,0 +1,47 @@
+﻿@model PSite3.Models.OrderItem
+@{
+    ViewData["Title"] = "OrderItems";
+    var orders = ViewBag.Orders as IEnumerable<PSite3.Models.Order>;
+    var products = ViewBag.Products as IEnumerable<PSite3.Models.Product>;
+}
+<h1>Create order item</h1>
+
+<form asp-action="Create" method="post">
+    <div>
+        <label>Order</label>
+        <select asp-for="OrderId">
+            @foreach (var o in (orders ?? Enumerable.Empty<PSite3.Models.Order>()))
+            {
+                <option value="@o.IdOrder">@o.IdOrder</option>
+            }
+        </select>
+        <span asp-validation-for="OrderId"></span>
+    </div>
+
+    <div>
+        <label>Product</label>
+        <select asp-for="ProductId">
+            @foreach (var p in (products ?? Enumerable.Empty<PSite3.Models.Product>()))
+            {
+                <option value="@p.IdProduct">@p.Name</option>
+            }
+        </select>
+        <span asp-validation-for="ProductId"></span>
+    </div>
+
+    <div>
+        <label>Quantity</label>
+        <input asp-for="Quantity" />
+        <span asp-validation-for="Quantity"></span>
+    </div>
+
+    <div>
+        <label>Price</label>
+        <input asp-for="Price" />
+        <span asp-validation-for="Price"></span>
+    </div>
+
+    <br />
+    <button class="btn btn-primary" type="submit">Save</button>
+    <a class="btn btn-danger" asp-action="Index">Cancel</a>
+</form>

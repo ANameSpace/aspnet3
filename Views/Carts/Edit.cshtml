@@ -1,0 +1,23 @@
+﻿@model PSite3.Models.Cart
+@{
+    var users = ViewBag.Users as IEnumerable<PSite3.Models.User>;
+    ViewData["Title"] = "Carts";
+}
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="IdCart" />
+    <div>
+        <label>User</label>
+        <select asp-for="UserId">
+            @foreach (var u in (users ?? Enumerable.Empty<PSite3.Models.User>()))
+            {
+                <option value="@u.IdUser">@u.Login</option>
+            }
+        </select>
+        <span asp-validation-for="UserId"></span>
+    </div>
+
+    <br />
+    <button class="btn btn-primary" type="submit">Save</button>
+    <a class="btn btn-secondary" asp-action="Index">Cancel</a>
+</form>

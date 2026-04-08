@@ -4,7 +4,7 @@ using PSite3.Models;
 
 namespace PSite3.Controllers
 {
-    public class CartController(ShopContext _context) : Controller
+    public class ShopCartController(ShopContext _context) : Controller
     {
         private readonly int USER_ID = 1;
         
