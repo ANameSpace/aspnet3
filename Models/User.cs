@@ -1,16 +1,27 @@
-﻿using System;
+﻿using PSite3.Models.Attribute;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace PSite3.Models;
 
 public partial class User
 {
+    [Required(ErrorMessage = "Необходимо указать идентефикатор!")]
+    [Range(0, int.MaxValue, ErrorMessage = "Идентефикатор не может быть таким числом!")]
     public int IdUser { get; set; }
 
+    [Required(ErrorMessage = "Необходимо указать имя поьлзователя!")]
+    [StringLength(64, MinimumLength = 3, ErrorMessage = "Поле от 3 до 64 символоы")]
+    [Name]
+    [OnlyRussian]
     public string Login { get; set; } = null!;
 
+    [Required(ErrorMessage = "Необходимо указать хэш!")]
     public string Hash { get; set; } = null!;
 
+    [Required(ErrorMessage = "Необходимо указать идентефикатор!")]
+    [Range(0, int.MaxValue, ErrorMessage = "Идентефикатор не может быть таким числом!")]
     public int RoleId { get; set; }
 
     public virtual ICollection<Cart> Carts { get; set; } = new List<Cart>();
