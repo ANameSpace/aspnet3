@@ -11,11 +11,14 @@ public partial class User
     [Range(0, int.MaxValue, ErrorMessage = "Идентефикатор не может быть таким числом!")]
     public int IdUser { get; set; }
 
-    [Required(ErrorMessage = "Необходимо указать имя поьлзователя!")]
+    [Required(ErrorMessage = "Необходимо указать имя пользователя!")]
     [StringLength(64, MinimumLength = 3, ErrorMessage = "Поле от 3 до 64 символоы")]
     [Name]
     [OnlyRussian]
-    public string Login { get; set; } = null!;
+    public string UserName { get; set; } = null!;
+
+    [Required(ErrorMessage = "Необходимо указать почту!")]
+    public string Email { get; set; } = null!;
 
     [Required(ErrorMessage = "Необходимо указать хэш!")]
     public string Hash { get; set; } = null!;
@@ -23,6 +26,8 @@ public partial class User
     [Required(ErrorMessage = "Необходимо указать идентефикатор!")]
     [Range(0, int.MaxValue, ErrorMessage = "Идентефикатор не может быть таким числом!")]
     public int RoleId { get; set; }
+
+    public bool IsActive { get; set; } = true;
 
     public virtual ICollection<Cart> Carts { get; set; } = new List<Cart>();
 

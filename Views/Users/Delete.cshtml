@@ -5,7 +5,7 @@
 
 <h1>Уверены?</h1>
 
-<p>Вы удалите пользователя с логином <b>@Model.Login</b> (ID @Model.IdUser).</p>
+<p>Вы удалите пользователя <b>@Model.UserName</b> (@Model.Email, ID: @Model.IdUser).</p>
 
 <form asp-action="Delete" method="post">
     <input type="hidden" asp-for="IdUser" />

@@ -1,21 +1,75 @@
+/* === Базовые переменные и сброс === */
+:root {
+    --blue: #1a73e8;
+    --blue-hover: #1557b0;
+    --green: #188038;
+    --red: #d93025;
+    --red-hover: #b3271e;
+    --gray: #5f6368;
+    --light-gray: #f8f9fa;
+    --border: #dadce0;
+    --shadow-1: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
+    --shadow-2: 0 1px 3px 0 rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.15);
+    --radius: 12px;
+}
+
 html {
     font-size: 14px;
-    -webkit-user-select: none; /* Chrome/Safari */
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE/Edge */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
     user-select: none;
 }
 
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
+body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+    color: #202124;
+    min-height: 100vh;
+}
 
-/* Header Styles */
+/* === Типографика === */
+h1, h2, h3 {
+    font-family: 'Google Sans', sans-serif;
+    font-weight: 500;
+}
+
+/* === Контейнеры === */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+.cart-container {
+    max-width: 1200px;
+    margin: 3rem auto;
+    padding: 0 1.5rem;
+}
+
+/* === Заголовок страницы === */
+.page-title {
+    font-size: 2rem;
+    color: #202124;
+    margin: 2rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+    .page-title .material-icons-round {
+        color: var(--blue);
+        font-size: 2.5rem;
+    }
+
+/* === Header === */
 .header {
-    background: white;
-    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3);
-    padding: 1rem 0;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
     background: white;
     box-shadow: var(--shadow-1);
     padding: 1rem 0;
@@ -44,9 +98,9 @@ html {
     gap: 0.5rem;
 }
 
-.logo span {
-    color: var(--blue);
-}
+    .logo span {
+        color: var(--blue);
+    }
 
 .nav-menu {
     display: flex;
@@ -67,10 +121,9 @@ html {
 .header-badge {
     color: white;
     padding: 7px 15px;
-    border-radius: 50px;
+    border-radius: var(--radius);
     font-weight: 500;
     text-decoration: none;
-    border-radius: var(--radius);
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -81,21 +134,21 @@ html {
     background: var(--red);
 }
 
-.admin-badge:hover {
-    background: var(--red-hover);
-    color: white;
-    transform: scale(1.05);
-}
+    .admin-badge:hover {
+        background: var(--red-hover);
+        color: white;
+        transform: scale(1.05);
+    }
 
 .cart-badge {
     background: var(--blue);
 }
 
-.cart-badge:hover {
-    background: var(--blue-hover);
-    color: white;
-    transform: scale(1.05);
-}
+    .cart-badge:hover {
+        background: var(--blue-hover);
+        color: white;
+        transform: scale(1.05);
+    }
 
 /* Mobile Menu */
 @media (max-width: 768px) {
@@ -110,70 +163,7 @@ html {
     }
 }
 
-
-/* Google Style Shop - Universal CSS */
-:root {
-    --blue: #1a73e8;
-    --blue-hover: #1557b0;
-    --green: #188038;
-    --red: #d93025;
-    --red-hover: #b3271e;
-    --gray: #5f6368;
-    --light-gray: #f8f9fa;
-    --border: #dadce0;
-    --shadow-1: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
-    --shadow-2: 0 1px 3px 0 rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.15);
-    --radius: 12px;
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Roboto', sans-serif;
-    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
-    color: #202124;
-    min-height: 100vh;
-}
-
-/* Typography */
-h1, h2, h3 {
-    font-family: 'Google Sans', sans-serif;
-    font-weight: 500;
-}
-
-/* Container */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1.5rem;
-}
-
-.cart-container {
-    max-width: 1200px;
-    margin: 3rem auto;
-    padding: 0 1.5rem;
-}
-
-/* Page Title */
-.page-title {
-    font-size: 2rem;
-    color: #202124;
-    margin: 2rem 0;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-    .page-title .material-icons-round {
-        color: var(--blue);
-        font-size: 2.5rem;
-    }
-
-/* Buttons */
+/* === Кнопки === */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -238,7 +228,7 @@ h1, h2, h3 {
         color: var(--blue-hover);
     }
 
-/* Product Grid */
+/* === Сетка товаров === */
 .product-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -302,7 +292,7 @@ h1, h2, h3 {
         font-weight: 400;
     }
 
-/* Cart */
+/* === Корзина === */
 .cart-grid {
     display: grid;
     grid-template-columns: 1fr 380px;
@@ -493,8 +483,9 @@ h1, h2, h3 {
         box-shadow: var(--shadow-2);
     }
 
-/* Empty State */
-.empty-cart, .empty-state {
+/* === Пустое состояние === */
+.empty-cart,
+.empty-state {
     background: white;
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -529,14 +520,16 @@ h1, h2, h3 {
     font-family: 'Material Icons Round';
 }
 
-.empty-cart h2, .empty-state h2 {
+.empty-cart h2,
+.empty-state h2 {
     font-weight: 500;
     color: #202124;
     font-size: 1.75rem;
     margin-bottom: 0.75rem;
 }
 
-.empty-cart p, .empty-state p {
+.empty-cart p,
+.empty-state p {
     color: var(--gray);
     font-size: 1.1rem;
     margin-bottom: 2rem;
@@ -564,7 +557,7 @@ h1, h2, h3 {
         font-size: 1.25rem;
     }
 
-/* Search & Filter */
+/* === Поиск и фильтры === */
 .search-filter-bar {
     background: white;
     padding: 1rem 1.5rem;
@@ -585,7 +578,7 @@ h1, h2, h3 {
         outline: none;
     }
 
-/* Toast */
+/* === Уведомления === */
 .toast {
     position: fixed;
     bottom: 2rem;
@@ -618,12 +611,17 @@ h1, h2, h3 {
         background: var(--red);
     }
 
-/* Forms */
+/* === Формы === */
 form {
     display: inline;
 }
 
-input[type="text"], input[type="number"], input[type="search"], select {
+input[type="text"],
+input[type="email"],
+input[type="number"],
+input[type="search"],
+input[type="password"],
+select {
     width: 100%;
     padding: 0.75rem 1rem;
     border: 2px solid var(--border);
@@ -632,7 +630,8 @@ input[type="text"], input[type="number"], input[type="search"], select {
     transition: border-color 0.2s;
 }
 
-    input:focus, select:focus {
+    input:focus,
+    select:focus {
         border-color: var(--blue);
         outline: none;
     }
@@ -650,11 +649,8 @@ input[type="month"] {
     font-family: inherit;
     background-color: #ffffff;
     transition: border-color 0.2s, box-shadow 0.2s;
-    /* Убираем стандартную стрелку календаря в WebKit (опционально) */
-    /* appearance: none; */
 }
 
-    /* Стиль при фокусе (как и у остальных полей) */
     input[type="datetime-local"]:focus,
     input[type="date"]:focus,
     input[type="time"]:focus,
@@ -664,7 +660,6 @@ input[type="month"] {
         box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
 
-    /* Hover-эффект */
     input[type="datetime-local"]:hover,
     input[type="date"]:hover,
     input[type="time"]:hover,
@@ -672,7 +667,6 @@ input[type="month"] {
         border-color: #94a3b8;
     }
 
-    /* Кнопка календаря / часов (WebKit) – сделаем аккуратной */
     input[type="datetime-local"]::-webkit-calendar-picker-indicator,
     input[type="date"]::-webkit-calendar-picker-indicator,
     input[type="time"]::-webkit-calendar-picker-indicator,
@@ -690,7 +684,6 @@ input[type="month"] {
             opacity: 1;
         }
 
-    /* Firefox – внутренняя кнопка */
     input[type="datetime-local"]::-moz-focus-inner,
     input[type="date"]::-moz-focus-inner,
     input[type="time"]::-moz-focus-inner {
@@ -698,7 +691,58 @@ input[type="month"] {
         padding: 0;
     }
 
-/* Responsive */
+/* === Таблицы === */
+table thead tr {
+    background-color: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+table th {
+    text-align: left;
+    padding: 1rem 1rem;
+    font-weight: 600;
+    color: #1e293b;
+    letter-spacing: -0.01em;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+table td {
+    padding: 0.875rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+    vertical-align: middle;
+}
+
+table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+table tbody tr:hover {
+    background-color: #fafcff;
+    transition: background-color 0.2s ease;
+}
+
+table .action-btn {
+    background: none;
+    border: none;
+    color: #3b82f6;
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    transition: all 0.15s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+    table .action-btn:hover {
+        background-color: #eff6ff;
+        color: #2563eb;
+    }
+
+/* === Адаптивность === */
 @media (max-width: 992px) {
     .cart-grid {
         grid-template-columns: 1fr;
@@ -726,6 +770,22 @@ input[type="month"] {
 
     .product-grid {
         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+}
+
+@media (max-width: 640px) {
+    table th,
+    table td {
+        padding: 0.75rem 0.75rem;
+        font-size: 0.85rem;
     }
 }
 
@@ -763,69 +823,23 @@ input[type="month"] {
         text-align: center;
     }
 }
-
-
-
-/* Заголовки */
-table thead tr {
-    background-color: #f8fafc;
-    border-bottom: 1px solid #e2e8f0;
-}
-
-table th {
-    text-align: left;
-    padding: 1rem 1rem;
-    font-weight: 600;
-    color: #1e293b;
-    letter-spacing: -0.01em;
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    white-space: nowrap;
-}
-
-/* Ячейки тела таблицы */
-table td {
-    padding: 0.875rem 1rem;
-    border-bottom: 1px solid #f1f5f9;
-    color: #334155;
-    vertical-align: middle;
-}
-
-/* Убираем нижнюю границу у последней строки */
-table tbody tr:last-child td {
-    border-bottom: none;
-}
-
-/* Hover эффект для строк */
-table tbody tr:hover {
-    background-color: #fafcff;
-    transition: background-color 0.2s ease;
-}
-
-/* Кнопки действий внутри таблицы (опционально) */
-table .action-btn {
-    background: none;
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px; /* скругление */
+    font-weight: 500;
+    font-size: 0.95rem;
     border: none;
-    color: #3b82f6;
     cursor: pointer;
-    font-size: 0.85rem;
-    padding: 0.25rem 0.5rem;
-    border-radius: 6px;
-    transition: all 0.15s;
-    text-decoration: none;
-    display: inline-block;
+    background: linear-gradient(135deg, #1a73e8, #1557b0);
+    color: white;
+    transition: all 0.2s;
 }
 
-    table .action-btn:hover {
-        background-color: #eff6ff;
-        color: #2563eb;
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 1px 3px rgba(60,64,67,0.3), 0 4px 8px rgba(60,64,67,0.15);
     }
-
-/* Адаптивность для маленьких экранов */
-@media (max-width: 640px) {
-    table th,
-    table td {
-        padding: 0.75rem 0.75rem;
-        font-size: 0.85rem;
-    }
-}

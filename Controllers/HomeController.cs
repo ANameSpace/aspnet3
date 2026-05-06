@@ -2,32 +2,40 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PSite3.Models;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace PSite3.Controllers
 {
     public class HomeController(ShopContext _context) : Controller
     {
-        private readonly int USER_ID = 1;
+        [HttpGet]
+        public async Task<IActionResult> Test()
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.IdUser == 1);
 
+            Console.WriteLine($"UserName from DB: {user?.UserName}");
+
+            return Content($"DB: {user?.UserName}<br/>Browser encoding: UTF-8", "text/html");
+        }
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var userId = USER_ID;
-
             var products = await _context.Products
                 .Include(p => p.Category)
                 .ToListAsync();
 
-            if (userId != 0) 
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!string.IsNullOrEmpty(userIdClaim) && int.TryParse(userIdClaim, out var userId))
             {
                 var cart = await _context.Carts
-                .Include(c => c.CartItems)
-                .FirstOrDefaultAsync(c => c.UserId == USER_ID);
+                    .Include(c => c.CartItems)
+                    .FirstOrDefaultAsync(c => c.UserId == userId);
 
                 ViewBag.CartItems = cart?.CartItems?
                     .ToDictionary(i => i.ProductId, i => i.Quantity) ?? [];
             }
-            
+
             return View(products);
         }
 

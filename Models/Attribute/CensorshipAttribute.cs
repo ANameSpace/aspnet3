@@ -4,7 +4,7 @@ namespace PSite3.Models.Attribute
 {
     public class CensorshipAttribute : ValidationAttribute
     {
-        private readonly string[] BadWord = ["vpn", "telegram"];
+        private readonly string[] BadWord = ["vpn", "telegram", "tg", "telega", "facebook", "whatsapp", "instagrasm"];
 
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {

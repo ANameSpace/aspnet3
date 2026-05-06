@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PSite3.Models;
 
 namespace PSite3.Controllers.Crud
 {
+    [Authorize(Roles = "Admin")]
     public class CartItemsController(ShopContext _context) : Controller
     {
         public async Task<IActionResult> Index()

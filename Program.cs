@@ -1,4 +1,7 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace PSite3
 {
@@ -13,6 +16,23 @@ namespace PSite3
 
             builder.Services.AddDbContext<PSite3.Models.ShopContext>(option =>
                 option.UseSqlServer(builder.Configuration.GetConnectionString("Ñonnection")));
+
+            builder.Services.AddDataProtection()
+                .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(builder.Environment.ContentRootPath, "DataProtection-Keys")))
+                .SetApplicationName("PSite3");
+
+
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.LoginPath = "/Account/Login";
+                    options.AccessDeniedPath = "/Account/AccessDenied";
+                    options.ExpireTimeSpan = TimeSpan.FromDays(30);
+                    options.SlidingExpiration = true;
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+                    options.Cookie.SameSite = SameSiteMode.Lax;
+                });
+            builder.Services.AddAuthorization();
 
             var app = builder.Build();
 
@@ -29,6 +49,7 @@ namespace PSite3
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(

@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PSite3.Models;
 
 namespace PSite3.Controllers.Crud
 {
+    [Authorize(Roles = "Admin")]
     public class UsersController(ShopContext _context) : Controller
     {
         public async Task<IActionResult> Index()
@@ -25,6 +27,7 @@ namespace PSite3.Controllers.Crud
             ModelState.Remove("Role");
             ModelState.Remove("Carts");
             ModelState.Remove("Orders");
+            ModelState.Remove("IsActive");
 
             if (!ModelState.IsValid)
             {
@@ -32,13 +35,26 @@ namespace PSite3.Controllers.Crud
                 return View(user);
             }
 
-            var existing = await _context.Users.FirstOrDefaultAsync(u => u.Login == user.Login);
-            if (existing != null)
+            var existingLogin = await _context.Users.FirstOrDefaultAsync(u => u.UserName == user.UserName);
+            var existingEmail = await _context.Users.FirstOrDefaultAsync(u => u.Email == user.Email);
+
+            if (existingLogin != null)
             {
-                ModelState.AddModelError("Login", "Пользователь с таким логином уже существует");
+                ModelState.AddModelError("UserName", "Пользователь с таким именем уже существует");
                 ViewBag.Roles = await _context.Roles.ToListAsync();
                 return View(user);
             }
+
+            if (existingEmail != null)
+            {
+                ModelState.AddModelError("Email", "Пользователь с такой почтой уже существует");
+                ViewBag.Roles = await _context.Roles.ToListAsync();
+                return View(user);
+            }
+
+            user.Hash = BCrypt.Net.BCrypt.HashPassword(user.Hash);
+            user.IsActive = true;
+
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
@@ -72,11 +88,21 @@ namespace PSite3.Controllers.Crud
                 return View(user);
             }
 
-            var existing = await _context.Users
-                .FirstOrDefaultAsync(u => u.Login == user.Login && u.IdUser != user.IdUser);
-            if (existing != null)
+            var existingLogin = await _context.Users
+                .FirstOrDefaultAsync(u => u.UserName == user.UserName && u.IdUser != user.IdUser);
+            var existingEmail = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == user.Email && u.IdUser != user.IdUser);
+
+            if (existingLogin != null)
             {
-                ModelState.AddModelError("Login", "Пользователь с таким логином уже существует");
+                ModelState.AddModelError("UserName", "Пользователь с таким именем уже существует");
+                ViewBag.Roles = await _context.Roles.ToListAsync();
+                return View(user);
+            }
+
+            if (existingEmail != null)
+            {
+                ModelState.AddModelError("Email", "Пользователь с такой почтой уже существует");
                 ViewBag.Roles = await _context.Roles.ToListAsync();
                 return View(user);
             }

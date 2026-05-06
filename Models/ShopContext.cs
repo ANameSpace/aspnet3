@@ -73,7 +73,7 @@ public partial class ShopContext : DbContext
             entity.Property(e => e.IdCategory).HasColumnName("ID_category");
             entity.Property(e => e.Name)
                 .HasMaxLength(32)
-                .IsUnicode(false)
+                .IsUnicode(true)
                 .HasColumnName("name");
         });
 
@@ -125,15 +125,15 @@ public partial class ShopContext : DbContext
             entity.Property(e => e.CategoryId).HasColumnName("category_ID");
             entity.Property(e => e.Description)
                 .HasMaxLength(512)
-                .IsUnicode(false)
+                .IsUnicode(true)
                 .HasColumnName("description");
             entity.Property(e => e.Image)
                 .HasMaxLength(256)
-                .IsUnicode(false)
+                .IsUnicode(true)
                 .HasColumnName("image");
             entity.Property(e => e.Name)
                 .HasMaxLength(32)
-                .IsUnicode(false)
+                .IsUnicode(true)
                 .HasColumnName("name");
             entity.Property(e => e.Price)
                 .HasColumnType("decimal(10, 2)")
@@ -154,7 +154,7 @@ public partial class ShopContext : DbContext
             entity.Property(e => e.IdRole).HasColumnName("ID_role");
             entity.Property(e => e.Name)
                 .HasMaxLength(32)
-                .IsUnicode(false)
+                .IsUnicode(true)
                 .HasColumnName("name");
         });
 
@@ -162,17 +162,27 @@ public partial class ShopContext : DbContext
         {
             entity.HasKey(e => e.IdUser).HasName("PK__Users__D7B4671E66CD4759");
 
-            entity.HasIndex(e => e.Login, "UQ__Users__7838F27215F9E06A").IsUnique();
+            entity.HasIndex(e => e.UserName, "UQ__Users_UserName").IsUnique();
 
             entity.Property(e => e.IdUser).HasColumnName("ID_user");
+
             entity.Property(e => e.Hash)
                 .HasMaxLength(128)
-                .IsUnicode(false)
+                .IsUnicode(true)
                 .HasColumnName("hash");
-            entity.Property(e => e.Login)
-                .HasMaxLength(32)
-                .IsUnicode(false)
-                .HasColumnName("login");
+
+            entity.Property(e => e.UserName)
+                .IsUnicode(true)
+                .HasColumnName("UserName");
+
+            entity.Property(e => e.Email)
+                .HasMaxLength(255)
+                .IsUnicode(true)
+                .HasColumnName("Email");
+
+            entity.Property(e => e.IsActive)
+                .HasColumnName("IsActive");
+
             entity.Property(e => e.RoleId).HasColumnName("role_ID");
 
             entity.HasOne(d => d.Role).WithMany(p => p.Users)

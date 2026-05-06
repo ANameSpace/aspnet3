@@ -11,7 +11,7 @@
         <select asp-for="UserId">
             @foreach (var u in (users ?? Enumerable.Empty<PSite3.Models.User>()))
             {
-                <option value="@u.IdUser">@u.Login</option>
+                <option value="@u.IdUser">@u.Email</option>
             }
         </select>
         <span asp-validation-for="UserId"></span>

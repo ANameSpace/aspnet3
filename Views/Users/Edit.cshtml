@@ -7,20 +7,21 @@
 
 <form asp-action="Edit" method="post">
     <input type="hidden" asp-for="IdUser" />
+
     <div>
-        <label>Login</label>
-        <input asp-for="Login" />
-        <span asp-validation-for="Login"></span>
+        <label asp-for="UserName"></label>
+        <input asp-for="UserName" />
+        <span asp-validation-for="UserName"></span>
     </div>
 
     <div>
-        <label>Hash</label>
-        <input asp-for="Hash" />
-        <span asp-validation-for="Hash"></span>
+        <label asp-for="Email"></label>
+        <input asp-for="Email" />
+        <span asp-validation-for="Email"></span>
     </div>
 
     <div>
-        <label>Role</label>
+        <label asp-for="RoleId"></label>
         <select asp-for="RoleId">
             @foreach (var r in (roles ?? Enumerable.Empty<PSite3.Models.Role>()))
             {
@@ -28,6 +29,12 @@
             }
         </select>
         <span asp-validation-for="RoleId"></span>
+    </div>
+
+    <div>
+        <label asp-for="IsActive"></label>
+        <input asp-for="IsActive" type="checkbox" />
+        <span asp-validation-for="IsActive"></span>
     </div>
 
     <br />

@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Регистрация</title>
+    <meta charset="utf-8" />
+</head>
+<body>
+    <h2>Регистрация</h2>
+
+    <form method="post" action="#">
+        <div class="validation-summary"></div>
+        <div>
+            <label>Email</label>
+            <input type="email" name="email" />
+        </div>
+
+        <div>
+            <label>Имя пользователя</label>
+            <input type="text" name="username" />
+        </div>
+
+        <div>
+            <label>Пароль</label>
+            <input type="password" name="password" />
+        </div>
+
+        <br />
+        <button type="submit" class="btn-primary">Зарегистрироваться</button>
+    </form>
+
+    <p>
+        Уже есть аккаунт?
+        <a asp-controller="Account" asp-action="Login">Войти</a>
+    </p>
+</body>
+</html>

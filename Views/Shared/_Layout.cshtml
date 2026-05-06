@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using System.Security.Claims
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -17,19 +18,43 @@
                 <span>МАГАЗИН</span>
             </a>
 
-            <div>
-                <a asp-controller="Admin" asp-action="Index" class="header-badge admin-badge" id="admin-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"><title>Admin SVG Icon</title><path fill="currentColor" fill-rule="evenodd" d="m7.879 5l1.06-1.06l1.421-1.422a3.5 3.5 0 0 0-3.653 4.674l.326.897l-.675.674l-3.797 3.798a.621.621 0 1 0 .878.878l3.798-3.797l.674-.675l.897.325a3.5 3.5 0 0 0 4.674-3.653L12.06 7.062L11 8.12L9.94 7.06l-1-1zm6.173-1.93A5 5 0 0 1 15 6a5 5 0 0 1-6.703 4.703L4.5 14.5a2.121 2.121 0 0 1-3-3l3.797-3.797A5 5 0 0 1 13 2l-1.076 1.076l-.863.863L10 5l1 1l1.06-1.06l.864-.864L14 3z" clip-rule="evenodd" /></svg>
-                    <span id="cart-count">Админка</span>
+            <div class="d-flex align-items-center gap-3">
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-controller="Admin" asp-action="Index" class="header-badge admin-badge">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"><title>Admin SVG Icon</title><path fill="currentColor" fill-rule="evenodd" d="m7.879 5l1.06-1.06l1.421-1.422a3.5 3.5 0 0 0-3.653 4.674l.326.897l-.675.674l-3.797 3.798a.621.621 0 1 0 .878.878l3.798-3.797l.674-.675l.897.325a3.5 3.5 0 0 0 4.674-3.653L12.06 7.062L11 8.12L9.94 7.06l-1-1zm6.173-1.93A5 5 0 0 1 15 6a5 5 0 0 1-6.703 4.703L4.5 14.5a2.121 2.121 0 0 1-3-3l3.797-3.797A5 5 0 0 1 13 2l-1.076 1.076l-.863.863L10 5l1 1l1.06-1.06l.864-.864L14 3z" clip-rule="evenodd" /></svg>
+                        <span>Админка</span>
+                    </a>
+                }
+
+                <a asp-controller="ShopCart" asp-action="Index" class="header-badge cart-badge">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><title>Baseline-shopping-cart SVG Icon</title><path fill="currentColor" d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2s-.9-2-2-2M1 2v2h2l3.6 7.59l-1.35 2.45c-.16.28-.25.61-.25.96c0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12l.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0 0 20 4H5.21l-.94-2zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2s2-.9 2-2s-.9-2-2-2" /></svg>
+                    <span>В корзину</span>
                 </a>
 
-                <a asp-controller="ShopCart" asp-action="Index" class="header-badge cart-badge" id="cart-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><title>Baseline-shopping-cart SVG Icon</title><path fill="currentColor" d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2s-.9-2-2-2M1 2v2h2l3.6 7.59l-1.35 2.45c-.16.28-.25.61-.25.96c0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12l.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0 0 20 4H5.21l-.94-2zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2s2-.9 2-2s-.9-2-2-2" /></svg>
-                    <span id="cart-count">В корзину</span>
-                </a>
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            👤 @User.Identity.Name
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                    <button type="submit" class="dropdown-item text-danger">Выйти</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                }
+                else
+                {
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-primary">Войти</a>
+                }
             </div>
         </div>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -41,6 +66,7 @@
             &copy; 2026 - Мой САЙТ
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

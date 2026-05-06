@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Вход</title>
+    <meta charset="utf-8" />
+</head>
+<body>
+    <h2>Вход</h2>
+
+    <form method="post" action="#">
+        <div class="validation-summary"></div>
+        <div>
+            <label>Email</label>
+            <input type="text" name="email" />
+        </div>
+        <div>
+            <label>Пароль</label>
+            <input type="password" name="password" />
+        </div>
+        <br>
+        <button type="submit" class="btn-primary">Войти</button>
+    </form>
+
+    <p>
+        Нет аккаунта?
+        <a asp-controller="Account" asp-action="Register">Регистрация</a>
+    </p>
+</body>
+</html>
