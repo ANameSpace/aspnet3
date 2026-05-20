@@ -1,37 +1,57 @@
 ﻿@model IEnumerable<PSite3.Models.Product>
 @{
-    ViewData["Title"] = "Products";
+    ViewData["Title"] = "Товары";
 }
 
-<h1>Данные таблицы Product</h1>
+<h1>Управление товарами</h1>
 
-<a class="btn btn-primary" asp-action="Create">Добавить продукт</a>
+<p>
+    <a asp-action="Create" class="btn btn-primary">Добавить товар</a>
+</p>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Код</th>
-            <th>Название</th>
-            <th>Описание</th>
-            <th>Цена</th>
-            <th>Код категории</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var m in Model)
-        {
+<div class="table">
+    <table class="table">
+        <thead>
             <tr>
-                <td>@m.IdProduct</td>
-                <td>@m.Name</td>
-                <td>@m.Description</td>
-                <td>@m.Price</td>
-                <td>@m.CategoryId</td>
-                <td>
-                    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@m.IdProduct">Изменить</a>
-                    <a class="btn btn-danger" asp-action="Delete" asp-route-id="@m.IdProduct">Удалить</a>
-                </td>
+                <th>Изображение</th>
+                <th>Код</th>
+                <th>Название</th>
+                <th>Описание</th>
+                <th>Цена</th>
+                <th>Категория</th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                var image = string.IsNullOrEmpty(item.Image) ? "no-image.jpg" : item.Image;
+                var imgUrl = Url.Content($"~/images/products/{image}");
+
+                var shortDesc = string.IsNullOrEmpty(item.Description)
+                    ? "—"
+                    : (item.Description.Length > 50
+                    ? item.Description.Substring(0, 50) + "..."
+                    : item.Description);
+
+                <tr>
+                    <td>
+                            <img src="@imgUrl" alt="@item.Name"
+                                 class="img-thumbnail"
+                                 style="width: 80px; height: 80px; object-fit: cover;"
+                                 onerror="this.src='@Url.Content("~/images/products/no-image.jpg")'" />
+                    </td>
+                    <td>@item.IdProduct</td>
+                    <td>@item.Name</td>
+                    <td>@shortDesc</td>
+                    <td>@item.Price.ToString("N2") ₽</td>
+                    <td>@(item.Category?.Name ?? "—")</td>
+                    <td>
+                        <a class="btn btn-primary" asp-action="Edit" asp-route-id="@item.IdProduct">Изменить</a>
+                        <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.IdProduct">Удалить</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

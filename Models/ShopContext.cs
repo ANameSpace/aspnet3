@@ -173,6 +173,7 @@ public partial class ShopContext : DbContext
 
             entity.Property(e => e.UserName)
                 .IsUnicode(true)
+                //.HasColumnType("nvarchar(64)")
                 .HasColumnName("UserName");
 
             entity.Property(e => e.Email)

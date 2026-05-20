@@ -13,11 +13,11 @@ public partial class Product
 
     [Required(ErrorMessage = "Необходимо указать идентефикатор!")]
     [Name]
-    [OnlyRussian]
     public string Name { get; set; } = null!;
 
     [StringLength(64, MinimumLength = 3, ErrorMessage = "Поле от 3 до 64 символоы")]
     [Censorship]
+    [Sentence]
     public string? Description { get; set; }
 
     [Required(ErrorMessage = "Необходимо указать цену!")]
@@ -28,7 +28,6 @@ public partial class Product
     [Range(0, int.MaxValue, ErrorMessage = "Идентефикатор не может быть таким числом!")]
     public int CategoryId { get; set; }
 
-    [ImageFileName]
     public string? Image { get; set; }
 
     public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();

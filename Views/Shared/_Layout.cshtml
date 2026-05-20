@@ -1,4 +1,18 @@
 ﻿@using System.Security.Claims
+@inject PSite3.Models.ShopContext Context
+@using Microsoft.EntityFrameworkCore
+
+@{
+    int cartCount = 0;
+    var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+    if (!string.IsNullOrEmpty(userIdClaim) && int.TryParse(userIdClaim, out var userId))
+    {
+        cartCount = await Context.CartItems
+            .Where(ci => ci.Cart.UserId == userId)
+            .SumAsync(ci => ci.Quantity);
+    }
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,13 +44,17 @@
                 <a asp-controller="ShopCart" asp-action="Index" class="header-badge cart-badge">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><title>Baseline-shopping-cart SVG Icon</title><path fill="currentColor" d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2s-.9-2-2-2M1 2v2h2l3.6 7.59l-1.35 2.45c-.16.28-.25.61-.25.96c0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12l.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0 0 20 4H5.21l-.94-2zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2s2-.9 2-2s-.9-2-2-2" /></svg>
                     <span>В корзину</span>
+                    @if (cartCount > 0)
+                    {
+                        <span class="cart-badge-count">(@cartCount)</span>
+                    }
                 </a>
 
                 @if (User.Identity?.IsAuthenticated == true)
                 {
                     <div class="dropdown">
                         <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                            👤 @User.Identity.Name
+                            @User.Identity.Name
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li>
@@ -61,7 +79,7 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer>
         <div class="container">
             &copy; 2026 - Мой САЙТ
         </div>

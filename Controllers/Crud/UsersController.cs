@@ -81,6 +81,7 @@ namespace PSite3.Controllers.Crud
             ModelState.Remove("Role");
             ModelState.Remove("Carts");
             ModelState.Remove("Orders");
+            ModelState.Remove("IsActive");
 
             if (!ModelState.IsValid)
             {
@@ -105,6 +106,11 @@ namespace PSite3.Controllers.Crud
                 ModelState.AddModelError("Email", "Пользователь с такой почтой уже существует");
                 ViewBag.Roles = await _context.Roles.ToListAsync();
                 return View(user);
+            }
+
+            if (!user.Hash.StartsWith("$"))
+            {
+                user.Hash = BCrypt.Net.BCrypt.HashPassword(user.Hash);
             }
 
             _context.Users.Update(user);

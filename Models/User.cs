@@ -14,7 +14,6 @@ public partial class User
     [Required(ErrorMessage = "Необходимо указать имя пользователя!")]
     [StringLength(64, MinimumLength = 3, ErrorMessage = "Поле от 3 до 64 символоы")]
     [Name]
-    [OnlyRussian]
     public string UserName { get; set; } = null!;
 
     [Required(ErrorMessage = "Необходимо указать почту!")]

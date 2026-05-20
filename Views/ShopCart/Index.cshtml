@@ -1,17 +1,19 @@
 ﻿@model IEnumerable<PSite3.Models.CartItem>
 @{
     ViewData["Title"] = "Корзина";
+    var totalAmount = ViewBag.TotalAmount as decimal? ?? 0;
+    var totalItems = ViewBag.TotalItems as int? ?? 0;
 }
 
 <div class="cart-container">
     @if (Model != null && Model.Any())
     {
-        <h1 class="cart-page-title">
-            <span>Корзина</span>
-        </h1>
+        <h1 class="cart-page-title">Ваша корзина</h1>
 
         <a asp-controller="Home" asp-action="Index" class="btn-continue">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><title>Arrow-back-outline SVG Icon</title><path fill="currentColor" d="M19 11H7.14l3.63-4.36a1 1 0 1 0-1.54-1.28l-5 6a1 1 0 0 0-.09.15c0 .05 0 .08-.07.13A1 1 0 0 0 4 12a1 1 0 0 0 .07.36c0 .05 0 .08.07.13a1 1 0 0 0 .09.15l5 6A1 1 0 0 0 10 19a1 1 0 0 0 .64-.23a1 1 0 0 0 .13-1.41L7.14 13H19a1 1 0 0 0 0-2" /></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                <path fill="currentColor" d="M19 11H7.14l3.63-4.36a1 1 0 1 0-1.54-1.28l-5 6a1 1 0 0 0-.09.15c0 .05 0 .08-.07.13A1 1 0 0 0 4 12a1 1 0 0 0 .07.36c0 .05 0 .08.07.13a1 1 0 0 0 .09.15l5 6A1 1 0 0 0 10 19a1 1 0 0 0 .64-.23a1 1 0 0 0 .13-1.41L7.14 13H19a1 1 0 0 0 0-2" />
+            </svg>
             <span>Продолжить покупки</span>
         </a>
 
@@ -19,34 +21,54 @@
             <div class="cart-items">
                 @foreach (var item in Model)
                 {
+                    var imageName = string.IsNullOrEmpty(item.Product?.Image) ? "no-image.jpg" : item.Product.Image;
+                    var imageUrl = Url.Content($"~/images/products/{imageName}");
+
                     <div class="cart-item" data-product-id="@item.ProductId">
-                        <form asp-action="Update" method="post" class="d-inline">
-                            <input type="hidden" name="productId" value="@item.ProductId" />
-                            <input type="hidden" name="quantity" value="0" />
-                            <button type="submit" class="item-image" title="Наведите и кликните для удаления">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24"><title>Baseline-hide-image SVG Icon</title><path fill="currentColor" d="M21 5c0-1.1-.9-2-2-2H5.83L21 18.17zM2.81 2.81L1.39 4.22L3 5.83V19c0 1.1.9 2 2 2h13.17l1.61 1.61l1.41-1.41zM6 17l3-4l2.25 3l.82-1.1l2.1 2.1z" /></svg>
-                            </button>
-                        </form>
+                        <div class="item-image-wrapper">
+                            <img style="width: 80px; height: 80px;"
+                                 src="@imageUrl"
+                                 alt="@item.Product?.Name"
+                                 class="item-image"
+                                 onerror="this.src='@Url.Content("~/images/products/no-image.jpg")'" />
+
+                            <form asp-action="Update" method="post" class="remove-form">
+                                <input type="hidden" name="productId" value="@item.ProductId" />
+                                <input type="hidden" name="quantity" value="0" />
+                                <button type="submit" class="btn-remove" title="Удалить товар">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                                        <path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6zM19 4h-3.5l-1-1h-5l-1 1H5v2h14z" />
+                                    </svg>
+                                </button>
+                            </form>
+                        </div>
 
                         <div class="item-details">
-                            <h3>@item.Product.Name</h3>
-                            <div class="item-price">@item.Product.Price.ToString("0.00") ₽</div>
+                            <h3>@item.Product?.Name</h3>
+                            <p class="item-category text-muted small">
+                                @(item.Product?.Category?.Name ?? "Без категории")
+                            </p>
+                            <div class="item-price">@item.Product?.Price.ToString("N2") ₽</div>
                         </div>
 
                         <form asp-action="Update" method="post" class="quantity-control">
                             <input type="hidden" name="productId" value="@item.ProductId" />
 
                             <button type="submit" name="quantity" value="@(item.Quantity - 1)"
-                                    class="qty-btn"
-                                    title="Уменьшить">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><title>Baseline-minus SVG Icon</title><path fill="currentColor" d="M19 12.998H5v-2h14z" /></svg>
+                                    class="qty-btn" title="Уменьшить"
+                                    @(item.Quantity <= 1 ? "disabled" : "")>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                                    <path fill="currentColor" d="M19 12.998H5v-2h14z" />
+                                </svg>
                             </button>
 
                             <span class="qty-value">@item.Quantity</span>
 
                             <button type="submit" name="quantity" value="@(item.Quantity + 1)"
                                     class="qty-btn" title="Увеличить">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><title>Add SVG Icon</title><path fill="currentColor" d="M17 15V8h-2v7H8v2h7v7h2v-7h7v-2z" /></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                                    <path fill="currentColor" d="M19 13H13V19h-2v-6H5v-2h6V5h2v6h6z" />
+                                </svg>
                             </button>
                         </form>
 
@@ -58,27 +80,41 @@
             </div>
 
             <div class="cart-summary">
-                <h2 class="summary-title">Итого</h2>
+                <h2 class="summary-title">📋 Итого</h2>
 
                 <div class="summary-row">
-                    <span>Товаров</span>
-                    <span>@Model.Sum(i => i.Quantity) шт.</span>
+                    <span>Товаров в корзине</span>
+                    <strong>@totalItems шт.</strong>
                 </div>
 
                 <div class="summary-row">
-                    <span>Получение</span>
-                    <span style="color: var(--green);">Самовывоз</span>
+                    <span>Доставка</span>
+                    <span style="color: var(--green, #28a745);">Бесплатно (самовывоз)</span>
                 </div>
+
+                <hr />
 
                 <div class="summary-row total">
                     <span>К оплате</span>
-                    <span id="cart-total">@Model.Sum(i => i.Product.Price * i.Quantity).ToString("0.00") ₽</span>
+                    <strong id="cart-total">@totalAmount.ToString("N2") ₽</strong>
                 </div>
 
-                <button class="btn-checkout">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 512 512"><title>Check-circle SVG Icon</title><path fill="currentColor" d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256S119.033 8 256 8s248 111.033 248 248M227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001" /></svg>
-                    <span>Оформить заказ</span>
-                </button>
+                <form asp-action="Checkout" method="post">
+                    <button type="submit" class="btn-checkout">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512">
+                            <path fill="currentColor" d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256S119.033 8 256 8s248 111.033 248 248M227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001" />
+                        </svg>
+                        <span>Оформить заказ</span>
+                    </button>
+                </form>
+
+                <form asp-action="Clear" method="post" class="mt-3">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-link text-danger p-0"
+                            onclick="return confirm('Очистить всю корзину?')">
+                        Очистить корзину
+                    </button>
+                </form>
             </div>
         </div>
     }
@@ -86,12 +122,14 @@
     {
         <div class="empty-cart">
             <div class="empty-cart-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><title>Error-404 SVG Icon</title><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8v3a1 1 0 0 0 1 1h3m0-4v8m10-8v3a1 1 0 0 0 1 1h3m0-4v8m-11-6v4a2 2 0 1 0 4 0v-4a2 2 0 1 0-4 0" /></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24">
+                    <path fill="none" stroke="currentColor" stroke-linecap="round"
+                          stroke-linejoin="round" stroke-width="2"
+                          d="M3 8v3a1 1 0 0 0 1 1h3m0-4v8m10-8v3a1 1 0 0 0 1 1h3m0-4v8m-11-6v4a2 2 0 1 0 4 0v-4a2 2 0 1 0-4 0" />
+                </svg>
             </div>
-
             <h2>Ваша корзина пуста</h2>
             <p>Похоже, вы ещё не добавили ни одного товара.<br>Исправим это прямо сейчас!</p>
-
             <a asp-controller="Home" asp-action="Index" class="btn-catalog">
                 <span>Перейти в каталог</span>
             </a>

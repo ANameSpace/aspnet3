@@ -14,12 +14,14 @@ namespace PSite3
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
-            builder.Services.AddDbContext<PSite3.Models.ShopContext>(option =>
-                option.UseSqlServer(builder.Configuration.GetConnectionString("Ñonnection")));
+            builder.Services.AddDbContext<PSite3.Models.ShopContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("Ñonnection"));
+            });
 
             builder.Services.AddDataProtection()
-                .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(builder.Environment.ContentRootPath, "DataProtection-Keys")))
-                .SetApplicationName("PSite3");
+                    .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(builder.Environment.ContentRootPath, "DataProtection-Keys")))
+                    .SetApplicationName("PSite3");
 
 
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

@@ -21,6 +21,12 @@
     </div>
 
     <div>
+        <label asp-for="Hash"></label>
+        <input asp-for="Hash" />
+        <span asp-validation-for="Hash"></span>
+    </div>
+
+    <div>
         <label asp-for="RoleId"></label>
         <select asp-for="RoleId">
             @foreach (var r in (roles ?? Enumerable.Empty<PSite3.Models.Role>()))

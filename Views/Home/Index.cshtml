@@ -1,69 +1,205 @@
 ﻿@model IEnumerable<PSite3.Models.Product>
 @{
     ViewData["Title"] = "Каталог";
+    
+    var categories = ViewBag.Categories as IEnumerable<PSite3.Models.Category>;
+    var searchString = ViewBag.SearchString as string;
+    var categoryId = ViewBag.CategoryId as int?;
+    var sortBy = ViewBag.SortBy as string;
+    var currentPage = ViewBag.CurrentPage as int? ?? 1;
+    var totalPages = ViewBag.TotalPages as int? ?? 1;
 }
 
-<div class="cart-container">
-    <h1 class="page-title">
-        <span>Каталог товаров</span>
-    </h1>
-
-    <div class="product-grid">
-        @foreach (var product in Model)
-        {
-            var cartQuantity = ViewBag.CartItems != null &&
-            ViewBag.CartItems.ContainsKey(product.IdProduct) ?
-            ViewBag.CartItems[product.IdProduct] : 0;
-
-            <div class="product-card">
-                <span class="product-category">
-                    @(product.Category?.Name ?? "Без категории")
-                </span>
-
-                <h3 class="product-name">@product.Name</h3>
-
-                <p class="product-description">
-                    @(!string.IsNullOrEmpty(product.Description) ? product.Description : "Описание отсутствует")
-                </p>
-
-                <div class="product-price">
-                    @product.Price.ToString("0.00") <small>₽</small>
-                </div>
-
-                @if (cartQuantity > 0)
-                {
-                    <form asp-controller="ShopCart" asp-action="Update" method="post" style="display: block; margin-top: 0.75rem;">
-                        <input type="hidden" name="productId" value="@product.IdProduct" />
-                        <input type="hidden" name="quantity" value="0" />
-                        <button type="submit" class="btn btn-danger" style="width: 100%;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><title>Baseline-delete SVG Icon</title><path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6zM19 4h-3.5l-1-1h-5l-1 1H5v2h14z" /></svg>
-                            <span>Удалить из корзины</span>
-                        </button>
-                    </form>
-                }
-                else
-                {
-                    <form asp-controller="ShopCart" asp-action="Update" method="post">
-                        <input type="hidden" name="productId" value="@product.IdProduct" />
-                        <input type="hidden" name="quantity" value="1" />
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><title>Baseline-shopping-cart SVG Icon</title><path fill="currentColor" d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2s-.9-2-2-2M1 2v2h2l3.6 7.59l-1.35 2.45c-.16.28-.25.61-.25.96c0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12l.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0 0 20 4H5.21l-.94-2zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2s2-.9 2-2s-.9-2-2-2" /></svg>
-                            <span>В корзину</span>
-                        </button>
-                    </form>
-                }
+<div class="catalog-container">
+    <div class="catalog-filters">
+        <form method="get" asp-action="Index" class="filters-form">
+            
+            <div class="filter-group">
+                <label for="searchString">Поиск</label>
+                <input type="text" 
+                       id="searchString" 
+                       name="searchString" 
+                       value="@searchString" 
+                       placeholder="Название товара..." 
+                       class="form-control" />
             </div>
-        }
+
+            <div class="filter-group">
+                <label for="categoryId">Категория</label>
+                <select id="categoryId" name="categoryId" class="form-select">
+                    <option value="">Все категории</option>
+                    @foreach (var cat in categories ?? Enumerable.Empty<PSite3.Models.Category>())
+                    {
+                        <option value="@cat.IdCategory" selected="@(categoryId == cat.IdCategory)">
+                            @cat.Name
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="sortBy">Сортировка</label>
+                <select id="sortBy" name="sortBy" class="form-select">
+                    <option value="">По умолчанию</option>
+                    <option value="name_asc" selected="@(sortBy == "name_asc")">Название (А→Я)</option>
+                    <option value="name_desc" selected="@(sortBy == "name_desc")">Название (Я→А)</option>
+                    <option value="price_asc" selected="@(sortBy == "price_asc")">Цена (возрастание)</option>
+                    <option value="price_desc" selected="@(sortBy == "price_desc")">Цена (убывание)</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Применить</button>
+            @if (!string.IsNullOrEmpty(searchString) || categoryId.HasValue || !string.IsNullOrEmpty(sortBy))
+            {
+                <a asp-action="Index" class="btn btn-secondary">Сбросить</a>
+            }
+        </form>
     </div>
+
+    <h1 class="page-title">Каталог товаров</h1>
 
     @if (!Model.Any())
     {
         <div class="empty-state">
             <div class="empty-cart-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><title>Error-404 SVG Icon</title><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8v3a1 1 0 0 0 1 1h3m0-4v8m10-8v3a1 1 0 0 0 1 1h3m0-4v8m-11-6v4a2 2 0 1 0 4 0v-4a2 2 0 1 0-4 0" /></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24">
+                    <path fill="none" stroke="currentColor" stroke-linecap="round" 
+                          stroke-linejoin="round" stroke-width="2" 
+                          d="M3 8v3a1 1 0 0 0 1 1h3m0-4v8m10-8v3a1 1 0 0 0 1 1h3m0-4v8m-11-6v4a2 2 0 1 0 4 0v-4a2 2 0 1 0-4 0" />
+                </svg>
             </div>
             <h2>Товары не найдены</h2>
-            <p>Каталог пока пуст или по вашему запросу ничего не найдено</p>
+            <p>Попробуйте изменить параметры поиска или фильтрации</p>
+            <a asp-action="Index" class="btn btn-primary">Сбросить фильтры</a>
         </div>
+    }
+    else
+    {
+        <div class="product-grid">
+            @foreach (var product in Model)
+            {
+                var imageName = string.IsNullOrEmpty(product.Image) ? "no-image.jpg" : product.Image;
+                var imageUrl = Url.Content($"~/images/products/{imageName}");
+                
+                var cartQuantity = ViewBag.CartItems != null && 
+                    ((Dictionary<int, int>)ViewBag.CartItems).ContainsKey(product.IdProduct) 
+                    ? ((Dictionary<int, int>)ViewBag.CartItems)[product.IdProduct] 
+                    : 0;
+
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="@imageUrl" 
+                             alt="@product.Name" 
+                             class="img-fluid"
+                             onerror="this.src='@Url.Content("~/images/products/no-image.jpg")'" />
+                        <span class="product-category-badge">
+                            @(product.Category?.Name ?? "Без категории")
+                        </span>
+                    </div>
+
+                    <!-- Информация -->
+                    <div class="product-info">
+                        <h3 class="product-name">@product.Name</h3>
+                        
+                        <p class="product-description">
+                            @(!string.IsNullOrEmpty(product.Description) 
+                                ? (product.Description.Length > 80 
+                                    ? product.Description.Substring(0, 80) + "..." 
+                                    : product.Description) 
+                                : "Описание отсутствует")
+                        </p>
+
+                        <div class="product-price">
+                            @product.Price.ToString("N2") <small>₽</small>
+                        </div>
+
+                        <div class="product-actions">
+                            @if (cartQuantity > 0)
+                            {
+                                <form asp-controller="ShopCart" asp-action="Update" method="post">
+                                    <input type="hidden" name="productId" value="@product.IdProduct" />
+                                    <input type="hidden" name="quantity" value="0" />
+                                    <button type="submit" class="btn btn-danger w-100">
+                                        Удалить (@cartQuantity)
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <form asp-controller="ShopCart" asp-action="Update" method="post">
+                                    <input type="hidden" name="productId" value="@product.IdProduct" />
+                                    <input type="hidden" name="quantity" value="1" />
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        В корзину
+                                    </button>
+                                </form>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (totalPages > 1)
+        {
+            <nav aria-label="Пагинация каталога" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                        <a class="page-link" 
+                           asp-action="Index"
+                           asp-route-searchString="@searchString"
+                           asp-route-categoryId="@categoryId"
+                           asp-route-sortBy="@sortBy"
+                           asp-route-pageNumber="1">«</a>
+                    </li>
+                    
+                    <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                        <a class="page-link" 
+                           asp-action="Index"
+                           asp-route-searchString="@searchString"
+                           asp-route-categoryId="@categoryId"
+                           asp-route-sortBy="@sortBy"
+                           asp-route-pageNumber="@(currentPage - 1)">‹</a>
+                    </li>
+
+                    @for (int i = 1; i <= totalPages; i++)
+                    {
+                        if (i == 1 || i == totalPages || (i >= currentPage - 2 && i <= currentPage + 2))
+                        {
+                            <li class="page-item @(i == currentPage ? "active" : "")">
+                                <a class="page-link" 
+                                   asp-action="Index"
+                                   asp-route-searchString="@searchString"
+                                   asp-route-categoryId="@categoryId"
+                                   asp-route-sortBy="@sortBy"
+                                   asp-route-pageNumber="@i">@i</a>
+                            </li>
+                        }
+                        else if (i == currentPage - 3 || i == currentPage + 3)
+                        {
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                        }
+                    }
+
+                    <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                        <a class="page-link" 
+                           asp-action="Index"
+                           asp-route-searchString="@searchString"
+                           asp-route-categoryId="@categoryId"
+                           asp-route-sortBy="@sortBy"
+                           asp-route-pageNumber="@(currentPage + 1)">›</a>
+                    </li>
+                    
+                    <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                        <a class="page-link" 
+                           asp-action="Index"
+                           asp-route-searchString="@searchString"
+                           asp-route-categoryId="@categoryId"
+                           asp-route-sortBy="@sortBy"
+                           asp-route-pageNumber="@totalPages">»</a>
+                    </li>
+                </ul>
+            </nav>
+        }
     }
 </div>
