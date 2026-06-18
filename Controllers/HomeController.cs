@@ -1,12 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using PSite3.Models;
 using System.Diagnostics;
 using System.Security.Claims;
 
 namespace PSite3.Controllers
 {
-    public class HomeController(ShopContext _context) : Controller
+    public class HomeController(ShopContext _context, IMemoryCache _cache) : Controller
     {
         private const int PageSize = 8;
 
@@ -17,37 +18,44 @@ namespace PSite3.Controllers
             string? sortBy,
             int pageNumber = 1)
         {
-            var productsQuery = _context.Products
+            string cacheKey = $"products_{searchString ?? "null"}_{categoryId ?? 0}_{sortBy ?? "null"}_{pageNumber}";
+
+            if (!_cache.TryGetValue(cacheKey, out (List<Product> Products, int TotalItems) cached))
+            {
+                var productsQuery = _context.Products
                 .Include(p => p.Category)
                 .AsNoTracking();
 
-            if (!string.IsNullOrEmpty(searchString))
-            {
-                productsQuery = productsQuery
-                    .Where(p => p.Name.Contains(searchString) ||
-                               (p.Description != null && p.Description.Contains(searchString)));
+                if (!string.IsNullOrEmpty(searchString))
+                {
+                    productsQuery = productsQuery
+                        .Where(p => p.Name.Contains(searchString) ||
+                                   (p.Description != null && p.Description.Contains(searchString)));
+                }
+
+                if (categoryId.HasValue && categoryId.Value > 0)
+                {
+                    productsQuery = productsQuery.Where(p => p.CategoryId == categoryId.Value);
+                }
+
+                productsQuery = sortBy switch
+                {
+                    "name_asc" => productsQuery.OrderBy(p => p.Name),
+                    "name_desc" => productsQuery.OrderByDescending(p => p.Name),
+                    "price_asc" => productsQuery.OrderBy(p => p.Price),
+                    "price_desc" => productsQuery.OrderByDescending(p => p.Price),
+                    _ => productsQuery.OrderBy(p => p.IdProduct)
+                };
+
+                var totalItems = await productsQuery.CountAsync();
+                var products = await productsQuery
+                    .Skip((pageNumber - 1) * PageSize)
+                    .Take(PageSize)
+                    .ToListAsync();
+
+                cached = (products, totalItems);
+                _cache.Set(cacheKey, cached, TimeSpan.FromMinutes(5));
             }
-
-            if (categoryId.HasValue && categoryId.Value > 0)
-            {
-                productsQuery = productsQuery.Where(p => p.CategoryId == categoryId.Value);
-            }
-
-            productsQuery = sortBy switch
-            {
-                "name_asc" => productsQuery.OrderBy(p => p.Name),
-                "name_desc" => productsQuery.OrderByDescending(p => p.Name),
-                "price_asc" => productsQuery.OrderBy(p => p.Price),
-                "price_desc" => productsQuery.OrderByDescending(p => p.Price),
-                _ => productsQuery.OrderBy(p => p.IdProduct)
-            };
-
-            var totalItems = await productsQuery.CountAsync();
-            var products = await productsQuery
-                .Skip((pageNumber - 1) * PageSize)
-                .Take(PageSize)
-                .ToListAsync();
-
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!string.IsNullOrEmpty(userIdClaim) && int.TryParse(userIdClaim, out var userId))
             {
@@ -63,10 +71,10 @@ namespace PSite3.Controllers
             ViewBag.CategoryId = categoryId;
             ViewBag.SortBy = sortBy;
             ViewBag.CurrentPage = pageNumber;
-            ViewBag.TotalPages = (int)Math.Ceiling(totalItems / (double)PageSize);
+            ViewBag.TotalPages = (int)Math.Ceiling(cached.TotalItems / (double)PageSize);
             ViewBag.Categories = await _context.Categories.AsNoTracking().ToListAsync();
 
-            return View(products);
+            return View(cached.Products);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

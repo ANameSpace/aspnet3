@@ -139,7 +139,7 @@ namespace PSite3.Controllers
             var order = new Order
             {
                 UserId = userId.Value,
-                OrderDate = DateTime.UtcNow,
+                OrderDate = DateTime.Now,
                 OrderItems = cart.CartItems.Select(ci => new OrderItem
                 {
                     ProductId = ci.ProductId,
