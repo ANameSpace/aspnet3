@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace PSite3.Models.DTOs.Users;
@@ -12,8 +13,8 @@ public class UpdateUserDto
     [EmailAddress]
     public string Email { get; set; } = null!;
 
-    [Required]
-    public string Hash { get; set; } = null!;
+    [StringLength(128)]
+    public string? Hash { get; set; }
 
     [Required]
     [Range(0, int.MaxValue)]

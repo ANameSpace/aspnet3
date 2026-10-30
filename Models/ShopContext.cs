@@ -27,6 +27,8 @@ public partial class ShopContext : DbContext
 
     public virtual DbSet<Product> Products { get; set; }
 
+    public virtual DbSet<ProductReservation> ProductReservations { get; set; }
+
     public virtual DbSet<Role> Roles { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
@@ -139,10 +141,46 @@ public partial class ShopContext : DbContext
                 .HasColumnType("decimal(10, 2)")
                 .HasColumnName("price");
 
+            entity.Property(e => e.StockQuantity)
+                .HasDefaultValue(0)
+                .IsConcurrencyToken()
+                .HasColumnName("StockQuantity");
+
             entity.HasOne(d => d.Category).WithMany(p => p.Products)
                 .HasForeignKey(d => d.CategoryId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Products__catego__2E1BDC42");
+        });
+
+        modelBuilder.Entity<ProductReservation>(entity =>
+        {
+            entity.HasKey(e => e.IdReservation).HasName("PK_ProductReservations");
+
+            entity.Property(e => e.IdReservation).HasColumnName("ID_reservation");
+            entity.Property(e => e.ProductId).HasColumnName("product_ID");
+            entity.Property(e => e.UserId).HasColumnName("user_ID");
+            entity.Property(e => e.OrderId).HasColumnName("order_ID");
+            entity.Property(e => e.Quantity).HasColumnName("quantity");
+            entity.Property(e => e.ReservedAt).HasColumnName("reservedAt");
+            entity.Property(e => e.ClosedAt).HasColumnName("closedAt");
+            entity.Property(e => e.Status).HasColumnName("status");
+
+            entity.HasIndex(e => new { e.ProductId, e.Status }, "IX_ProductReservations_Product_Status");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.Reservations)
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_ProductReservations_Products");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Reservations)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_ProductReservations_Users");
+
+            entity.HasOne(d => d.Order).WithMany(p => p.Reservations)
+                .HasForeignKey(d => d.OrderId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK_ProductReservations_Orders");
         });
 
         modelBuilder.Entity<Role>(entity =>

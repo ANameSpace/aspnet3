@@ -20,5 +20,7 @@ public partial class Order
 
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
+    public virtual ICollection<ProductReservation> Reservations { get; set; } = new List<ProductReservation>();
+
     public virtual User User { get; set; } = null!;
 }

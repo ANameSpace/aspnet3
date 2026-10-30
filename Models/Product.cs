@@ -24,6 +24,9 @@ public partial class Product
     [Range(0.1, double.MaxValue, ErrorMessage = "Цена не может быть таким числом!")]
     public decimal Price { get; set; }
 
+    [Range(0, int.MaxValue, ErrorMessage = "Остаток не может быть отрицательным!")]
+    public int StockQuantity { get; set; }
+
     [Required(ErrorMessage = "Необходимо указать идентефикатор!")]
     [Range(0, int.MaxValue, ErrorMessage = "Идентефикатор не может быть таким числом!")]
     public int CategoryId { get; set; }
@@ -31,6 +34,8 @@ public partial class Product
     public string? Image { get; set; }
 
     public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+
+    public virtual ICollection<ProductReservation> Reservations { get; set; } = new List<ProductReservation>();
 
     public virtual Category Category { get; set; } = null!;
 

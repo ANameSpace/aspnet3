@@ -118,6 +118,9 @@ namespace PSite3.Controllers.Crud
                 product.Image = existingProduct.Image ?? _defaultImage;
             }
 
+            // Остаток управляется API резервирования; форма MVC его не содержит.
+            product.StockQuantity = existingProduct.StockQuantity;
+
             if (!ModelState.IsValid)
             {
                 ViewBag.Categories = await _context.Categories.ToListAsync();

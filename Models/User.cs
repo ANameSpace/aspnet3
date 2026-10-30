@@ -32,5 +32,7 @@ public partial class User
 
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
+    public virtual ICollection<ProductReservation> Reservations { get; set; } = new List<ProductReservation>();
+
     public virtual Role Role { get; set; } = null!;
 }

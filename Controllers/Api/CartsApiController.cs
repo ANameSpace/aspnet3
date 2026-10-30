@@ -1,104 +1,62 @@
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PSite3.Models;
 using PSite3.Models.DTOs.Carts;
+using PSite3.Services.Interfaces;
 
 namespace PSite3.Controllers.Api;
 
 [Route("api/carts")]
 [ApiController]
-public class CartsApiController : ControllerBase
+public class CartsApiController : ApiControllerBase
 {
-    private readonly ShopContext _context;
+    private readonly ICartService _carts;
 
-    public CartsApiController(ShopContext context)
+    public CartsApiController(ICartService carts)
     {
-        _context = context;
+        _carts = carts;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<CartDto>>> GetCarts([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
-    {
-        if (page < 1) page = 1;
-        if (pageSize < 1) pageSize = 10;
-
-        var carts = await _context.Carts
-            .OrderBy(c => c.IdCart)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
-
-        return Ok(carts.Select(CartDtoMapper.ToDto));
-    }
+    public async Task<ActionResult<IEnumerable<CartDto>>> GetCarts(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10,
+        CancellationToken cancellationToken = default)
+        => FromPagedResult(await _carts.GetPagedAsync(page, pageSize, cancellationToken));
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<CartDto>> GetCart(int id)
-    {
-        var cart = await _context.Carts.FindAsync(id);
-        if (cart == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(CartDtoMapper.ToDto(cart));
-    }
+    public async Task<ActionResult<CartDto>> GetCart(
+        int id,
+        CancellationToken cancellationToken = default)
+        => FromResult(await _carts.GetByIdAsync(id, cancellationToken));
 
     [HttpPost]
-    public async Task<ActionResult<CartDto>> CreateCart(CreateCartDto createDto)
-    {
-        var cart = new Cart
-        {
-            UserId = createDto.UserId
-        };
-
-        _context.Carts.Add(cart);
-        await _context.SaveChangesAsync();
-
-        var dto = CartDtoMapper.ToDto(cart);
-        return CreatedAtAction(nameof(GetCart), new { id = cart.IdCart }, dto);
-    }
+    public async Task<ActionResult<CartDto>> CreateCart(
+        CreateCartDto dto,
+        CancellationToken cancellationToken = default)
+        => CreatedFromResult(
+            await _carts.CreateAsync(dto, cancellationToken),
+            nameof(GetCart),
+            cart => cart.IdCart);
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateCart(int id, UpdateCartDto updateDto)
-    {
-        var cart = await _context.Carts.FindAsync(id);
-        if (cart == null)
-        {
-            return NotFound();
-        }
-
-        cart.UserId = updateDto.UserId;
-
-        await _context.SaveChangesAsync();
-        return NoContent();
-    }
+    public async Task<ActionResult<bool>> UpdateCart(
+        int id,
+        UpdateCartDto dto,
+        CancellationToken cancellationToken = default)
+        => FromResult(await _carts.UpdateAsync(id, dto, cancellationToken));
 
     [HttpPatch("{id}")]
-    public async Task<IActionResult> PatchCart(int id, PatchCartDto patchDto)
-    {
-        var cart = await _context.Carts.FindAsync(id);
-        if (cart == null)
-        {
-            return NotFound();
-        }
-
-        if (patchDto.UserId.HasValue) cart.UserId = patchDto.UserId.Value;
-
-        await _context.SaveChangesAsync();
-        return NoContent();
-    }
+    public async Task<ActionResult<bool>> PatchCart(
+        int id,
+        PatchCartDto dto,
+        CancellationToken cancellationToken = default)
+        => FromResult(await _carts.PatchAsync(id, dto, cancellationToken));
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteCart(int id)
-    {
-        var cart = await _context.Carts.FindAsync(id);
-        if (cart == null)
-        {
-            return NotFound();
-        }
-
-        _context.Carts.Remove(cart);
-        await _context.SaveChangesAsync();
-        return NoContent();
-    }
+    public async Task<ActionResult<bool>> DeleteCart(
+        int id,
+        CancellationToken cancellationToken = default)
+        => FromResult(await _carts.DeleteAsync(id, cancellationToken));
 }

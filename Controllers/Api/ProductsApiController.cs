@@ -1,110 +1,62 @@
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PSite3.Models;
 using PSite3.Models.DTOs.Products;
+using PSite3.Services.Interfaces;
 
 namespace PSite3.Controllers.Api;
 
 [Route("api/products")]
 [ApiController]
-public class ProductsApiController : ControllerBase
+public class ProductsApiController : ApiControllerBase
 {
-    private readonly ShopContext _context;
+    private readonly IProductService _products;
 
-    public ProductsApiController(ShopContext context)
+    public ProductsApiController(IProductService products)
     {
-        _context = context;
+        _products = products;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
-    {
-        if (page < 1) page = 1;
-        if (pageSize < 1) pageSize = 10;
-
-        var products = await _context.Products
-            .OrderBy(p => p.IdProduct)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
-
-        return Ok(products.Select(ProductDtoMapper.ToDto));
-    }
+    public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10,
+        CancellationToken cancellationToken = default)
+        => FromPagedResult(await _products.GetPagedAsync(page, pageSize, cancellationToken));
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<ProductDto>> GetProduct(int id)
-    {
-        var product = await _context.Products.FindAsync(id);
-        if (product == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(ProductDtoMapper.ToDto(product));
-    }
+    public async Task<ActionResult<ProductDto>> GetProduct(
+        int id,
+        CancellationToken cancellationToken = default)
+        => FromResult(await _products.GetByIdAsync(id, cancellationToken));
 
     [HttpPost]
-    public async Task<ActionResult<ProductDto>> CreateProduct(CreateProductDto createDto)
-    {
-        var product = new Product
-        {
-            Name = createDto.Name,
-            Description = createDto.Description,
-            Price = createDto.Price,
-            CategoryId = createDto.CategoryId,
-            Image = createDto.Image
-        };
-
-        _context.Products.Add(product);
-        await _context.SaveChangesAsync();
-
-        var dto = ProductDtoMapper.ToDto(product);
-        return CreatedAtAction(nameof(GetProduct), new { id = product.IdProduct }, dto);
-    }
+    public async Task<ActionResult<ProductDto>> CreateProduct(
+        CreateProductDto dto,
+        CancellationToken cancellationToken = default)
+        => CreatedFromResult(
+            await _products.CreateAsync(dto, cancellationToken),
+            nameof(GetProduct),
+            product => product.IdProduct);
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateProduct(int id, UpdateProductDto updateDto)
-    {
-        var product = await _context.Products.FindAsync(id);
-        if (product == null)
-        {
-            return NotFound();
-        }
-
-        product.Name = updateDto.Name;
-        product.Description = updateDto.Description;
-        product.Price = updateDto.Price;
-        product.CategoryId = updateDto.CategoryId;
-        product.Image = updateDto.Image;
-
-        await _context.SaveChangesAsync();
-        return NoContent();
-    }
+    public async Task<ActionResult<bool>> UpdateProduct(
+        int id,
+        UpdateProductDto dto,
+        CancellationToken cancellationToken = default)
+        => FromResult(await _products.UpdateAsync(id, dto, cancellationToken));
 
     [HttpPatch("{id}")]
-    public async Task<IActionResult> PatchProduct(int id, PatchProductDto patchDto)
-    {
-        var product = await _context.Products.FindAsync(id);
-        if (product == null) return NotFound();
-
-        if (patchDto.Name != null) product.Name = patchDto.Name;
-        if (patchDto.Description != null) product.Description = patchDto.Description;
-        if (patchDto.Price.HasValue) product.Price = patchDto.Price.Value;
-        if (patchDto.CategoryId.HasValue) product.CategoryId = patchDto.CategoryId.Value;
-        if (patchDto.Image != null) product.Image = patchDto.Image;
-
-        await _context.SaveChangesAsync();
-        return NoContent();
-    }
+    public async Task<ActionResult<bool>> PatchProduct(
+        int id,
+        PatchProductDto dto,
+        CancellationToken cancellationToken = default)
+        => FromResult(await _products.PatchAsync(id, dto, cancellationToken));
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteProduct(int id)
-    {
-        var product = await _context.Products.FindAsync(id);
-        if (product == null) return NotFound();
-
-        _context.Products.Remove(product);
-        await _context.SaveChangesAsync();
-        return NoContent();
-    }
+    public async Task<ActionResult<bool>> DeleteProduct(
+        int id,
+        CancellationToken cancellationToken = default)
+        => FromResult(await _products.DeleteAsync(id, cancellationToken));
 }

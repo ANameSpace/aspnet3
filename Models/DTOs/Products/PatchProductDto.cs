@@ -14,7 +14,11 @@ public class PatchProductDto
     public decimal? Price { get; set; }
 
     [Range(0, int.MaxValue)]
+    public int? StockQuantity { get; set; }
+
+    [Range(0, int.MaxValue)]
     public int? CategoryId { get; set; }
 
+    [StringLength(256)]
     public string? Image { get; set; }
 }

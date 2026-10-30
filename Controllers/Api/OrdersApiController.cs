@@ -1,108 +1,62 @@
-using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PSite3.Models;
 using PSite3.Models.DTOs.Orders;
+using PSite3.Services.Interfaces;
 
 namespace PSite3.Controllers.Api;
 
 [Route("api/orders")]
 [ApiController]
-public class OrdersApiController : ControllerBase
+public class OrdersApiController : ApiControllerBase
 {
-    private readonly ShopContext _context;
+    private readonly IOrderService _orders;
 
-    public OrdersApiController(ShopContext context)
+    public OrdersApiController(IOrderService orders)
     {
-        _context = context;
+        _orders = orders;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrders([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
-    {
-        if (page < 1) page = 1;
-        if (pageSize < 1) pageSize = 10;
-
-        var orders = await _context.Orders
-            .OrderBy(o => o.IdOrder)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
-
-        return Ok(orders.Select(OrderDtoMapper.ToDto));
-    }
+    public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrders(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10,
+        CancellationToken cancellationToken = default)
+        => FromPagedResult(await _orders.GetPagedAsync(page, pageSize, cancellationToken));
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<OrderDto>> GetOrder(int id)
-    {
-        var order = await _context.Orders.FindAsync(id);
-        if (order == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(OrderDtoMapper.ToDto(order));
-    }
+    public async Task<ActionResult<OrderDto>> GetOrder(
+        int id,
+        CancellationToken cancellationToken = default)
+        => FromResult(await _orders.GetByIdAsync(id, cancellationToken));
 
     [HttpPost]
-    public async Task<ActionResult<OrderDto>> CreateOrder(CreateOrderDto createDto)
-    {
-        var order = new Order
-        {
-            UserId = createDto.UserId,
-            OrderDate = DateTime.UtcNow
-        };
-
-        _context.Orders.Add(order);
-        await _context.SaveChangesAsync();
-
-        var dto = OrderDtoMapper.ToDto(order);
-        return CreatedAtAction(nameof(GetOrder), new { id = order.IdOrder }, dto);
-    }
+    public async Task<ActionResult<OrderDto>> CreateOrder(
+        CreateOrderDto dto,
+        CancellationToken cancellationToken = default)
+        => CreatedFromResult(
+            await _orders.CreateAsync(dto, cancellationToken),
+            nameof(GetOrder),
+            order => order.IdOrder);
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateOrder(int id, UpdateOrderDto updateDto)
-    {
-        var order = await _context.Orders.FindAsync(id);
-        if (order == null)
-        {
-            return NotFound();
-        }
-
-        order.UserId = updateDto.UserId;
-        order.OrderDate = updateDto.OrderDate;
-
-        await _context.SaveChangesAsync();
-        return NoContent();
-    }
+    public async Task<ActionResult<bool>> UpdateOrder(
+        int id,
+        UpdateOrderDto dto,
+        CancellationToken cancellationToken = default)
+        => FromResult(await _orders.UpdateAsync(id, dto, cancellationToken));
 
     [HttpPatch("{id}")]
-    public async Task<IActionResult> PatchOrder(int id, PatchOrderDto patchDto)
-    {
-        var order = await _context.Orders.FindAsync(id);
-        if (order == null)
-        {
-            return NotFound();
-        }
-
-        if (patchDto.UserId.HasValue) order.UserId = patchDto.UserId.Value;
-        if (patchDto.OrderDate.HasValue) order.OrderDate = patchDto.OrderDate.Value;
-
-        await _context.SaveChangesAsync();
-        return NoContent();
-    }
+    public async Task<ActionResult<bool>> PatchOrder(
+        int id,
+        PatchOrderDto dto,
+        CancellationToken cancellationToken = default)
+        => FromResult(await _orders.PatchAsync(id, dto, cancellationToken));
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteOrder(int id)
-    {
-        var order = await _context.Orders.FindAsync(id);
-        if (order == null)
-        {
-            return NotFound();
-        }
-
-        _context.Orders.Remove(order);
-        await _context.SaveChangesAsync();
-        return NoContent();
-    }
+    public async Task<ActionResult<bool>> DeleteOrder(
+        int id,
+        CancellationToken cancellationToken = default)
+        => FromResult(await _orders.DeleteAsync(id, cancellationToken));
 }

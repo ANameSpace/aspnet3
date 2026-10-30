@@ -1,3 +1,5 @@
+using PSite3.Models.DTOs.Products;
+
 namespace PSite3.Models.DTOs.OrderItems;
 
 public class OrderItemDto
@@ -7,4 +9,5 @@ public class OrderItemDto
     public int ProductId { get; set; }
     public int Quantity { get; set; }
     public decimal Price { get; set; }
+    public ProductSummaryDto? Product { get; set; }
 }

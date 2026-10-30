@@ -1,104 +1,62 @@
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PSite3.Models;
 using PSite3.Models.DTOs.Categories;
+using PSite3.Services.Interfaces;
 
 namespace PSite3.Controllers.Api;
 
 [Route("api/categories")]
 [ApiController]
-public class CategoriesApiController : ControllerBase
+public class CategoriesApiController : ApiControllerBase
 {
-    private readonly ShopContext _context;
+    private readonly ICategoryService _categories;
 
-    public CategoriesApiController(ShopContext context)
+    public CategoriesApiController(ICategoryService categories)
     {
-        _context = context;
+        _categories = categories;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<CategoryDto>>> GetCategories([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
-    {
-        if (page < 1) page = 1;
-        if (pageSize < 1) pageSize = 10;
-
-        var categories = await _context.Categories
-            .OrderBy(c => c.IdCategory)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
-
-        return Ok(categories.Select(CategoryDtoMapper.ToDto));
-    }
+    public async Task<ActionResult<IEnumerable<CategoryDto>>> GetCategories(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10,
+        CancellationToken cancellationToken = default)
+        => FromPagedResult(await _categories.GetPagedAsync(page, pageSize, cancellationToken));
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<CategoryDto>> GetCategory(int id)
-    {
-        var category = await _context.Categories.FindAsync(id);
-        if (category == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(CategoryDtoMapper.ToDto(category));
-    }
+    public async Task<ActionResult<CategoryDto>> GetCategory(
+        int id,
+        CancellationToken cancellationToken = default)
+        => FromResult(await _categories.GetByIdAsync(id, cancellationToken));
 
     [HttpPost]
-    public async Task<ActionResult<CategoryDto>> CreateCategory(CreateCategoryDto createDto)
-    {
-        var category = new Category
-        {
-            Name = createDto.Name
-        };
-
-        _context.Categories.Add(category);
-        await _context.SaveChangesAsync();
-
-        var dto = CategoryDtoMapper.ToDto(category);
-        return CreatedAtAction(nameof(GetCategory), new { id = category.IdCategory }, dto);
-    }
+    public async Task<ActionResult<CategoryDto>> CreateCategory(
+        CreateCategoryDto dto,
+        CancellationToken cancellationToken = default)
+        => CreatedFromResult(
+            await _categories.CreateAsync(dto, cancellationToken),
+            nameof(GetCategory),
+            category => category.IdCategory);
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateCategory(int id, UpdateCategoryDto updateDto)
-    {
-        var category = await _context.Categories.FindAsync(id);
-        if (category == null)
-        {
-            return NotFound();
-        }
-
-        category.Name = updateDto.Name;
-
-        await _context.SaveChangesAsync();
-        return NoContent();
-    }
+    public async Task<ActionResult<bool>> UpdateCategory(
+        int id,
+        UpdateCategoryDto dto,
+        CancellationToken cancellationToken = default)
+        => FromResult(await _categories.UpdateAsync(id, dto, cancellationToken));
 
     [HttpPatch("{id}")]
-    public async Task<IActionResult> PatchCategory(int id, PatchCategoryDto patchDto)
-    {
-        var category = await _context.Categories.FindAsync(id);
-        if (category == null)
-        {
-            return NotFound();
-        }
-
-        if (patchDto.Name != null) category.Name = patchDto.Name;
-
-        await _context.SaveChangesAsync();
-        return NoContent();
-    }
+    public async Task<ActionResult<bool>> PatchCategory(
+        int id,
+        PatchCategoryDto dto,
+        CancellationToken cancellationToken = default)
+        => FromResult(await _categories.PatchAsync(id, dto, cancellationToken));
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteCategory(int id)
-    {
-        var category = await _context.Categories.FindAsync(id);
-        if (category == null)
-        {
-            return NotFound();
-        }
-
-        _context.Categories.Remove(category);
-        await _context.SaveChangesAsync();
-        return NoContent();
-    }
+    public async Task<ActionResult<bool>> DeleteCategory(
+        int id,
+        CancellationToken cancellationToken = default)
+        => FromResult(await _categories.DeleteAsync(id, cancellationToken));
 }
