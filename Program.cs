@@ -1,6 +1,8 @@
+using System.Reflection;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using PSite3.Mappings;
 using PSite3.Repositories.Implementations;
 using PSite3.Repositories.Interfaces;
@@ -18,7 +20,29 @@ namespace PSite3
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
-            // Профили AutoMapper потокобезопасны и не хранят состояния.
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "PSite3 API",
+                    Version = "v1",
+                    Description = "REST API интернет-магазина PSite3: товары, категории, корзины, " +
+                                  "заказы, пользователи, роли и резервирования."
+                });
+
+
+                options.DocInclusionPredicate((_, api) =>
+                    api.RelativePath?.StartsWith("api/", StringComparison.OrdinalIgnoreCase) == true);
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                if (File.Exists(xmlPath))
+                {
+                    options.IncludeXmlComments(xmlPath, includeControllerXmlComments: true);
+                }
+            });
+
             builder.Services.AddAutoMapper(typeof(MappingProfile));
 
             builder.Services.AddDbContext<PSite3.Models.ShopContext>(options =>
@@ -78,6 +102,18 @@ namespace PSite3
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
+            }
+
+            // Swagger UI доступен только в режиме разработки: https://localhost:7063/swagger
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI(options =>
+                {
+                    options.SwaggerEndpoint("/swagger/v1/swagger.json", "PSite3 API v1");
+                    options.RoutePrefix = "swagger";
+                    options.DocumentTitle = "PSite3 API";
+                });
             }
 
             app.UseHttpsRedirection();
